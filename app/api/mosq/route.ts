@@ -1,6 +1,6 @@
 import { addMosq, getMosqs, getMosqById, updateMosq, deleteMosq } from "@/actions/mosqActions";
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 
 // GET route remains unchanged as it's public
 export async function GET(request: NextRequest) {
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
     try {
-        const { sessionClaims, userId } = await auth();
+        const { userId } = await auth();
         
         if (!userId) {
             return NextResponse.json({
@@ -111,6 +111,7 @@ export async function PUT(request: NextRequest) {
 
         const { searchParams } = new URL(request.url);
         const mosqId = searchParams.get("id");
+        console.log(searchParams)
 
         if (!mosqId) {
             return NextResponse.json({
@@ -119,8 +120,10 @@ export async function PUT(request: NextRequest) {
             }, { status: 400 });
         }
 
-        const userRole = (sessionClaims?.metadata as { role?: string })?.role;
-        const userMosqId = (sessionClaims?.metadata as { mosqId?: string })?.mosqId;
+        const user = await currentUser();
+        const userRole = user?.publicMetadata.role;
+        const userMosqId = user?.publicMetadata.mosqId;
+
 
         // Allow admin for all mosques, imam only for their mosque
         if (userRole !== 'admin' && (userRole !== 'imam' || userMosqId !== mosqId)) {

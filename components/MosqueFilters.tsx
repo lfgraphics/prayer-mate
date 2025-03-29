@@ -9,22 +9,21 @@ import { Card } from '@/components/ui/card';
 import { useAlert } from './useAlert';
 
 interface FiltersProps {
-    initialFilters: { [key: string]: string | string[] | undefined };
+    initialFilters?: { [key: string]: string | string[] | undefined };
 }
 
 export default function MosqueFilters({ initialFilters }: FiltersProps) {
     const alert = useAlert()
     const router = useRouter();
-    const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
 
     const [filters, setFilters] = useState({
-        by: (initialFilters.by as string) || '',
-        query: (initialFilters.query as string) || '',
-        lat: (initialFilters.lat as string) || '',
-        lng: (initialFilters.lng as string) || '',
-        radius: (initialFilters.radius as string) || '1000',
-        prayerTime: (initialFilters.prayerTime as string) || '',
+        by: (initialFilters?.by as string) || '',
+        query: (initialFilters?.query as string) || '',
+        lat: (initialFilters?.lat as string) || '',
+        lng: (initialFilters?.lng as string) || '',
+        radius: (initialFilters?.radius as string) || '1000',
+        prayerTime: (initialFilters?.prayerTime as string) || '',
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,12 +35,9 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
         setFilters(prev => ({ ...prev, by: value }));
     };
 
-    // When handling form submission
     const handleSubmit = () => {
-        // Create new URLSearchParams
         const params = new URLSearchParams();
 
-        // Only add parameters that have values
         Object.entries(filters).forEach(([key, value]) => {
             if (value) {
                 console.log(`Setting param ${key} = ${value}`);
@@ -49,7 +45,6 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
             }
         });
 
-        // Update the URL with the new search parameters
         startTransition(() => {
             router.push(`/mosques?${params.toString()}`);
         });
