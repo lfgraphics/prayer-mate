@@ -4,11 +4,11 @@ import MosqueFilters from '@/components/MosqueFilters';
 import { getMosqs } from "@/actions/mosqActions";
 import Loading from '../loading';
 
-// export const metadata = {
-//     title: 'Mosques | Prayer Mate',
-//     description: 'Find mosques near you with prayer times and location information',
-//     keywords: 'mosque, prayer times, islamic centers, masjid'
-// };
+export const metadata = {
+    title: 'Mosques | Prayer Mate',
+    description: 'Find mosques near you with prayer times and location information',
+    keywords: 'mosque, prayer times, islamic centers, masjid'
+};
 
 async function MosquesPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
     const params = await Promise.resolve(searchParams);
@@ -36,7 +36,6 @@ async function MosquesPage({ searchParams }: { searchParams?: { [key: string]: s
     if (params?.by === "prayerTime") {
         if (params?.prayerTime) {
             const prayerTime = params?.prayerTime as string;
-            console.log(`Raw prayerTime from URL: ${prayerTime}`);
             
             const [hours, minutes] = prayerTime.split(':').map(Number);
             
@@ -54,8 +53,6 @@ async function MosquesPage({ searchParams }: { searchParams?: { [key: string]: s
             
             const startTime = prayerTime.padStart(5, '0');
             const endTime = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
-            
-            console.log(`Searching for prayer times between ${startTime} and ${endTime}`);
             
             filterParams.timeRange = {
                 start: startTime,

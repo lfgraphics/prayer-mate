@@ -111,7 +111,6 @@ export async function PUT(request: NextRequest) {
 
         const { searchParams } = new URL(request.url);
         const mosqId = searchParams.get("id");
-        console.log(searchParams)
 
         if (!mosqId) {
             return NextResponse.json({

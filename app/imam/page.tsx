@@ -404,7 +404,6 @@ const Page = () => {
                                             <div key={prayer} className="grid grid-cols-3 gap-4 items-center">
                                                 <Label className="capitalize">{prayer}</Label>
                                                 <div>
-                                                    {/* <Label htmlFor={`${prayer}-hours`}>Hours</Label> */}
                                                     <Input
                                                         type="time"
                                                         value={`${String(updatedMosq?.prayerTimes?.[prayer as keyof typeof updatedMosq.prayerTimes]?.hours || 0).padStart(2, '0')}:${String(updatedMosq?.prayerTimes?.[prayer as keyof typeof updatedMosq.prayerTimes]?.minutes || 0).padStart(2, '0')}`}

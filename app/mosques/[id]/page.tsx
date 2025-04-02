@@ -9,7 +9,15 @@ import MosqueMap from '@/components/MosqueMap';
 import { MosqType } from '@/models/mosq';
 
 // Dynamic metadata generation
-export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+// Define the params type explicitly
+type MosquePageParams = {
+    params: {
+        id: string;
+    };
+};
+
+// Update the type definition for generateMetadata
+export async function generateMetadata({ params }: MosquePageParams): Promise<Metadata> {
     const response = await getMosqById(params.id);
 
     if (!response.success) {
@@ -31,7 +39,8 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     };
 }
 
-export default async function MosqueDetailPage({ params }: { params: { id: string } }) {
+// Update the type definition for the page component
+const MosqueDetailPage = async ({ params }: { params: { id: string } }) => {
     const response = await getMosqById(params.id);
 
     if (!response.success) {
@@ -243,3 +252,4 @@ export default async function MosqueDetailPage({ params }: { params: { id: strin
         </div>
     );
 }
+export default MosqueDetailPage;
