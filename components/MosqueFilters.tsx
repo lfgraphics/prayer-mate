@@ -125,10 +125,10 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
     }
 
     return (
-        <Card className="p-4 mb-6">
+        <div className="p-4 mb-6">
             <form onSubmit={(e) => { e.preventDefault(); handleSubmit }} name='mosqFilterForm' className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div>
+                <div className="flex flex-wrap gap-4 items-center">
+                    <div className="w-full md:w-auto flex-grow">
                         <Select value={filters.by} onValueChange={handleSelectChange}>
                             <SelectTrigger className='w-full'>
                                 <SelectValue placeholder="Select search type" />
@@ -143,35 +143,39 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
                     </div>
 
                     {filters.by === 'prayerTime' &&
-                        <Select value={filters.query} onValueChange={(value) => setFilters(prev => ({ ...prev, query: value }))}>
-                            <SelectTrigger className='w-full'>
-                                <SelectValue placeholder="Select a prayer" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="fajr">Fajr</SelectItem>
-                                <SelectItem value="zohar">Zohar</SelectItem>
-                                <SelectItem value="asr">Asr</SelectItem>
-                                <SelectItem value="maghrib">Maghrib</SelectItem>
-                                <SelectItem value="isha">Isha</SelectItem>
-                                <SelectItem value="juma">Juma</SelectItem>
-                                <SelectItem value="eidulfitr">Eid-ul-Fitr</SelectItem>
-                                <SelectItem value="eidulazha">Eid-ul-Azha</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <div className="w-full md:w-auto flex-grow">
+                            <Select value={filters.query} onValueChange={(value) => setFilters(prev => ({ ...prev, query: value }))}>
+                                <SelectTrigger className='w-full'>
+                                    <SelectValue placeholder="Select a prayer" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="fajr">Fajr</SelectItem>
+                                    <SelectItem value="zohar">Zohar</SelectItem>
+                                    <SelectItem value="asr">Asr</SelectItem>
+                                    <SelectItem value="maghrib">Maghrib</SelectItem>
+                                    <SelectItem value="isha">Isha</SelectItem>
+                                    <SelectItem value="juma">Juma</SelectItem>
+                                    <SelectItem value="eidulfitr">Eid-ul-Fitr</SelectItem>
+                                    <SelectItem value="eidulazha">Eid-ul-Azha</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     }
 
-                    {(filters.by !== '' && filters.by !== 'coordinates' && filters.by !== 'prayerTime') && <div>
-                        <Input
-                            name="query"
-                            value={filters.query}
-                            onChange={handleInputChange}
-                            placeholder={`Enter${filters.by === 'name' ? ' Mosq Name' : filters.by === 'location' ? ' Mosq Location' : filters.by === 'prayerTime' ? 'Prayer Name' : 'Cordinates'}`}
-                        />
-                    </div>}
+                    {(filters.by !== '' && filters.by !== 'coordinates' && filters.by !== 'prayerTime') && 
+                        <div className="w-full md:w-auto flex-grow">
+                            <Input
+                                name="query"
+                                value={filters.query}
+                                onChange={handleInputChange}
+                                placeholder={`Enter${filters.by === 'name' ? ' Mosq Name' : filters.by === 'location' ? ' Mosq Location' : filters.by === 'prayerTime' ? 'Prayer Name' : 'Cordinates'}`}
+                            />
+                        </div>
+                    }
 
                     {(filters.by === 'coordinates') && (
                         <>
-                            <div>
+                            <div className="w-full md:w-auto flex-grow">
                                 <label className="block text-sm font-medium mb-1">Radius (meters)</label>
                                 <Input
                                     name="radius"
@@ -181,7 +185,7 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
                                 />
                             </div>
 
-                            <div className="flex items-end">
+                            <div className="w-full md:w-auto flex-grow">
                                 <Button
                                     type="button"
                                     variant="outline"
@@ -195,7 +199,7 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
                     )}
 
                     {filters.by === 'prayerTime' && (
-                        <div>
+                        <div className="w-full md:w-auto flex-grow">
                             <label className="block text-sm font-medium mb-1">Prayer Time</label>
                             <Input
                                 type="time"
@@ -209,14 +213,17 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
                             </p>
                         </div>
                     )}
-                </div>
 
-                <div className="flex justify-end">
-                    <Button type="submit" disabled={isPending} onClick={handleSubmit}>
+                    <Button 
+                        type="submit" 
+                        disabled={isPending || filters.by == "" || filters.query.length < 2} 
+                        onClick={handleSubmit}
+                        className="w-full md:w-auto"
+                    >
                         {isPending ? 'Searching...' : 'Search Mosques'}
                     </Button>
                 </div>
             </form>
-        </Card>
+        </div>
     );
 }

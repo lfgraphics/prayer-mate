@@ -86,7 +86,7 @@ async function MosquesPage({ searchParams }: { searchParams?: { [key: string]: s
     }))) : [];
 
     return (
-        <div className="container mx-auto py-8">
+        <div className="container mx-auto py-4">
             <h1 className="text-3xl font-bold mb-8 text-center">Find Mosques prayer time</h1>
 
             <MosqueFilters initialFilters={params} />

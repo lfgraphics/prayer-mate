@@ -35,8 +35,23 @@ export const userInfo = async () => {
     }
 
     const user = await currentUser();
+
+    // Extract only the serializable properties we need
+    const serializableUser = user ? {
+        id: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        imageUrl: user.imageUrl,
+        emailAddresses: user.emailAddresses.map(email => ({
+            id: email.id,
+            emailAddress: email.emailAddress,
+        })),
+        publicMetadata: user.publicMetadata
+    } : null;
+
     return {
-        user,
+        user: serializableUser,
         message: 'Logged In'
     }
 }
