@@ -50,6 +50,7 @@ const optionalTimeSchema = {
 // Define the full schema
 const MosqSchema = new Schema<MosqType>(
     {
+        id: { type: String, required: true },
         name: { type: String, required: true },
         coordinates: {
             type: {

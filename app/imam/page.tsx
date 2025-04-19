@@ -15,8 +15,7 @@ import Loading from '@/app/loading';
 import { toast } from "sonner"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from '@/components/ui/textarea';
-// import { TimeInput } from '@/components/TimeInput';
-import { capturePhoto } from '@/utils/capturePhoto'; // Add this import
+import { openEmbeddedCamera } from '@/components/EmbeddedCamera';
 
 const Page = () => {
     const { isLoaded, isSignedIn, user } = useUser()
@@ -201,7 +200,7 @@ const Page = () => {
 
     const handleCapturePhoto = async (index?: number) => {
         try {
-            const photoBase64 = await capturePhoto();
+            const photoBase64 = await openEmbeddedCamera();
 
             if (index !== undefined) {
                 // Update existing photo

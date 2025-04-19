@@ -7,6 +7,8 @@ import { convertToAmPm } from '@/utils/format';
 import Link from 'next/link';
 import MosqueMap from '@/components/MosqueMap';
 import { MosqType } from '@/models/mosq';
+import MosqueGallery from '@/components/MosqueGallery';
+import MosqueFeaturedImage from '@/components/MosqueFeaturedImage';
 
 // Dynamic metadata generation
 // Define the params type explicitly
@@ -18,7 +20,8 @@ type MosquePageParams = {
 
 // Update the type definition for generateMetadata
 export async function generateMetadata({ params }: MosquePageParams): Promise<Metadata> {
-    const response = await getMosqById(params.id);
+    const mosqId = await params?.id;
+    const response = await getMosqById(mosqId);
 
     if (!response.success) {
         return {
@@ -41,7 +44,8 @@ export async function generateMetadata({ params }: MosquePageParams): Promise<Me
 
 // Update the type definition for the page component
 const MosqueDetailPage = async ({ params }: { params: { id: string } }) => {
-    const response = await getMosqById(params.id);
+    const mosqId = await params?.id;
+    const response = await getMosqById(mosqId);
 
     if (!response.success) {
         return (
@@ -73,10 +77,9 @@ const MosqueDetailPage = async ({ params }: { params: { id: string } }) => {
                             {/* Mosque Image */}
                             <div className="w-full md:w-1/3 h-48 md:h-auto relative rounded-lg overflow-hidden bg-muted flex items-center justify-center">
                                 {mosq.photos && mosq.photos.length > 0 ? (
-                                    <img
-                                        src={mosq.photos[0]}
-                                        alt={mosq.name}
-                                        className="object-cover"
+                                    <MosqueFeaturedImage 
+                                        photo={mosq.photos[0]} 
+                                        mosqueName={mosq.name} 
                                     />
                                 ) : (
                                     <div className="text-6xl text-muted-foreground">🕌</div>
@@ -129,18 +132,7 @@ const MosqueDetailPage = async ({ params }: { params: { id: string } }) => {
                     {mosq.photos && mosq.photos.length > 0 && (
                         <Card className="p-6">
                             <h2 className="text-xl font-bold mb-4">Photos</h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {mosq.photos.map((photo: string, index: number) => (
-                                    <div key={index} className="relative h-32 rounded-lg overflow-hidden">
-                                        <img
-                                            src={photo}
-                                            alt={`${mosq.name} - Photo ${index + 1}`}
-                                            // fill={true}
-                                            className="object-cover"
-                                        />
-                                    </div>
-                                ))}
-                            </div>
+                            <MosqueGallery photos={mosq.photos} mosqueName={mosq.name} />
                         </Card>
                     )}
                 </div>

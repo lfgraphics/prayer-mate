@@ -25,11 +25,18 @@ export async function GET(request: NextRequest) {
             const radius = searchParams.get("radius");
 
             if (latitude && longitude) {
-                filterParams.coordinates = [
-                    parseFloat(longitude),
-                    parseFloat(latitude)
-                ];
-                filterParams.radius = radius ? parseInt(radius) : 1000;
+                // Convert to numbers and ensure proper precision
+                const lat = parseFloat(latitude);
+                const lng = parseFloat(longitude);
+                
+                // Store coordinates in MongoDB's expected format [longitude, latitude]
+                filterParams.coordinates = [lng, lat];
+                
+                // Convert radius from meters to a more appropriate value if needed
+                // For MongoDB $geoNear, radius is typically in meters
+                filterParams.radius = radius ? parseInt(radius) : 5000; // Increased default radius
+                
+                console.log(`Searching near coordinates: [${lng}, ${lat}] with radius: ${filterParams.radius}m`);
             }
 
             // Handle prayer time specific parameters
@@ -64,6 +71,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const { sessionClaims, userId } = await auth();
+        const user = await currentUser()
         
         if (!userId) {
             return NextResponse.json({
@@ -76,7 +84,7 @@ export async function POST(request: NextRequest) {
         const userMosqId = (sessionClaims?.metadata as { mosqId?: string })?.mosqId;
 
         // Only admin and imams without existing mosq can create
-        if (userRole !== 'admin' && (userRole !== 'imam' || userMosqId)) {
+        if (userRole !== 'admin' && (userRole == 'imam' || userMosqId)) {
             return NextResponse.json({
                 success: false,
                 message: userMosqId ? 
@@ -86,7 +94,11 @@ export async function POST(request: NextRequest) {
         }
 
         const body = await request.json();
-        const response = await addMosq(body);
+        const response = await addMosq({
+            ...body,
+            id: userId,
+            imam: `${user?.firstName} ${user?.lastName}`
+        });
         return NextResponse.json(response, {
             status: response.success ? 201 : 400
         });

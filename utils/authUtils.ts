@@ -1,6 +1,6 @@
 'use server'
 
-import { auth, clerkClient, currentUser } from '@clerk/nextjs/server'
+import { auth, clerkClient, currentUser, User } from '@clerk/nextjs/server'
 
 export const updateUserMetadata = async () => {
     const { userId } = await auth()
@@ -24,7 +24,7 @@ export const updateUserMetadata = async () => {
     }
 }
 
-export const userInfo = async () => {
+export const userInfo = async (): Promise<{ user: User | null, message: string }> => {
     const { userId } = await auth()
 
     if (!userId) {
@@ -51,7 +51,7 @@ export const userInfo = async () => {
     } : null;
 
     return {
-        user: serializableUser,
+        user: serializableUser as User | null,
         message: 'Logged In'
     }
 }

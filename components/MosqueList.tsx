@@ -19,8 +19,8 @@ export default function MosqueList({ mosques }: MosqueListProps) {
 
     return (
         <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
-            {mosques?.length && mosques.length > 0 && mosques?.map((mosque) => (
-                <div key={String(mosque._id)} className="flex flex-col gap-2">
+            {mosques?.length && mosques.length > 0 && mosques?.map((mosque, index) => (
+                <div key={index} className="flex flex-col gap-2">
                     <MosqueCard mosq={mosque}
                     />
                 </div>

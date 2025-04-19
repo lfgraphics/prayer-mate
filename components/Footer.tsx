@@ -8,13 +8,13 @@ import { useEffect, useState } from "react";
 import { User } from "@clerk/nextjs/server";
 
 export default function Footer() {
-    const [user, setUser] = useState<User>();
+    const [localUser, setLocalUser] = useState<User | null>();
     useEffect(() => {
         userInfo().then((user) => {
-            setUser(user.user);
+            setLocalUser(user.user);
             console.log(user.user?.publicMetadata.role);
         });
-    })
+    }, []);
 
     return (
         <footer className="border-t bg-background">
@@ -46,7 +46,7 @@ export default function Footer() {
                         <h3 className="text-lg font-semibold">For Imams</h3>
                         <div>
                             <SignedIn>
-                                {user && user?.publicMetadata.role !== 'imam' && <Link href="/mosques/create">
+                                {localUser && localUser?.publicMetadata.role !== 'imam' && <Link href="/mosques/create">
                                     <Button variant="default">Enrol as an Imam</Button>
                                 </Link>}
                             </SignedIn>

@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { MapPin, Navigation } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import ImageViewer from './ImageViewer';
 import { Card } from "@/components/ui/card";
 import {
@@ -59,7 +58,7 @@ const MosqueCard = ({ mosq }: { mosq: MosqType }) => {
               src={mosq.photos[0]}
               alt={mosq.name}
               className="w-full h-full object-cover"
-              onClick={() => setIsImageOpen(true)}
+              onClick={() => { setIsImageOpen(true); setSelectedImage(mosq.photos[0])}}
             />
           ) : (
             <div className="text-4xl text-muted-foreground">🕌</div>

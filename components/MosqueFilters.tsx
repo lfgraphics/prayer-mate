@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useState, useTransition } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card } from '@/components/ui/card';
 import { useAlert } from './useAlert';
 
 interface FiltersProps {
@@ -22,7 +21,7 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
         query: (initialFilters?.query as string) || '',
         lat: (initialFilters?.lat as string) || '',
         lng: (initialFilters?.lng as string) || '',
-        radius: (initialFilters?.radius as string) || '1000',
+        radius: (initialFilters?.radius as string) || '5000',
         prayerTime: (initialFilters?.prayerTime as string) || '',
     });
 
@@ -32,7 +31,14 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
     };
 
     const handleSelectChange = (value: string) => {
-        setFilters(prev => ({ ...prev, by: value }));
+        setFilters({
+            by: value,
+            query: '',
+            lat: '',
+            lng: '',
+            radius: '5000',
+            prayerTime: ''
+        });
     };
 
     const handleSubmit = () => {
@@ -60,6 +66,7 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
                             lat: position.coords.latitude.toString(),
                             lng: position.coords.longitude.toString()
                         }))
+                        handleSubmit();
                     },
                     handleLocationError
                 )
@@ -126,7 +133,7 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
 
     return (
         <div className="p-4 mb-6">
-            <form onSubmit={(e) => { e.preventDefault(); handleSubmit }} name='mosqFilterForm' className="space-y-4">
+            <form onSubmit={(e) => { e.preventDefault(); handleSubmit() }} name='mosqFilterForm' className="space-y-4">
                 <div className="flex flex-wrap gap-4 items-center">
                     <div className="w-full md:w-auto flex-grow">
                         <Select value={filters.by} onValueChange={handleSelectChange}>
@@ -162,7 +169,7 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
                         </div>
                     }
 
-                    {(filters.by !== '' && filters.by !== 'coordinates' && filters.by !== 'prayerTime') && 
+                    {(filters.by !== '' && filters.by !== 'coordinates' && filters.by !== 'prayerTime') &&
                         <div className="w-full md:w-auto flex-grow">
                             <Input
                                 name="query"
@@ -181,7 +188,7 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
                                     name="radius"
                                     value={filters.radius}
                                     onChange={handleInputChange}
-                                    placeholder="e.g. 1000"
+                                    placeholder="e.g. 5000"
                                 />
                             </div>
 
@@ -214,9 +221,14 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
                         </div>
                     )}
 
-                    <Button 
-                        type="submit" 
-                        disabled={isPending || filters.by == "" || filters.query.length < 2} 
+                    <Button
+                        type="submit"
+                        disabled={
+                            isPending ||
+                            filters.by === '' ||
+                            (filters.by === 'coordinates' && (!filters.lat || !filters.lng)) ||
+                            (filters.by !== 'coordinates' && filters.query.length < 2)
+                        }
                         onClick={handleSubmit}
                         className="w-full md:w-auto"
                     >

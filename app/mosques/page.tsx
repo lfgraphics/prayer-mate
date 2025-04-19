@@ -3,6 +3,7 @@ import MosqueList from '@/components/MosqueList';
 import MosqueFilters from '@/components/MosqueFilters';
 import { getMosqs } from "@/actions/mosqActions";
 import Loading from '../loading';
+// import { use } from 'react';
 
 export const metadata = {
     title: 'Mosques | Prayer Mate',
@@ -10,64 +11,82 @@ export const metadata = {
     keywords: 'mosque, prayer times, islamic centers, masjid'
 };
 
-async function MosquesPage({ searchParams }: { searchParams?: { [key: string]: string | string[] | undefined } }) {
-    const params = await Promise.resolve(searchParams);
-    const filterParams: any = {};
+type Params = Promise<{ slug: string }>
+type SearchParams = {
+    by?: string;
+    lat?: string;
+    lng?: string;
+    radius?: string;
+    prayerTime?: string;
+    query?: string;
+    timeStart?: string;
+    timeEnd?: string;
+};
+// Convert to a client component to avoid searchParams issues
+export default async function MosquesPage(props: {
+    params: Params
+    searchParams: SearchParams
+}) {
+    // const params = use(props.params)
+    const searchParams = await props.searchParams
+    const query = searchParams.query
+    const by = searchParams.by
+    const lat = searchParams.lat
+    const lng = searchParams.lng
+    const radius = searchParams.radius
+    const prayerTime = searchParams.prayerTime
+    const timeStart = searchParams.timeStart
+    const timeEnd = searchParams.timeEnd
+    // Instead of using Object.entries, access properties directly
+    let filterParams: any = {};
 
-    if (params?.by) {
-        filterParams.by = params?.by as string;
-    }
-
-    if (params?.query) {
-        filterParams.query = params?.query as string;
-    }
-
-    if (params?.lat && params?.lng) {
+    // Check if coordinates search
+    if (by === "coordinates" && lat && lng) {
+        filterParams.by = "coordinates";
         filterParams.coordinates = [
-            parseFloat(params?.lng as string),
-            parseFloat(params?.lat as string)
+            parseFloat(lng),
+            parseFloat(lat)
         ];
 
-        if (params?.radius) {
-            filterParams.radius = parseInt(params?.radius as string);
+        if (radius) {
+            filterParams.radius = parseInt(radius);
         }
     }
 
-    if (params?.by === "prayerTime") {
-        if (params?.prayerTime) {
-            const prayerTime = params?.prayerTime as string;
-            
+    if (by === "prayerTime") {
+        filterParams.by = "prayerTime";
+
+        if (prayerTime) {
             const [hours, minutes] = prayerTime.split(':').map(Number);
-            
+
             let endHours = hours;
             let endMinutes = minutes + 90;
-            
+
             if (endMinutes >= 60) {
                 endHours += Math.floor(endMinutes / 60);
                 endMinutes = endMinutes % 60;
             }
-            
+
             if (endHours >= 24) {
                 endHours = endHours % 24;
             }
-            
+
             const startTime = prayerTime.padStart(5, '0');
             const endTime = `${endHours.toString().padStart(2, '0')}:${endMinutes.toString().padStart(2, '0')}`;
-            
+
             filterParams.timeRange = {
                 start: startTime,
                 end: endTime
             };
-            
-            if (params?.query) {
-                filterParams.prayerName = params?.query;
+
+            if (query) {
+                filterParams.prayerName = query;
             }
         }
-
-        else if (params?.timeStart || params?.timeEnd) {
+        else if (timeStart || timeEnd) {
             filterParams.timeRange = {
-                start: params?.timeStart ? (params?.timeStart as string).padStart(5, '0') : "00:00",
-                end: params?.timeEnd ? (params?.timeEnd as string).padStart(5, '0') : "23:59"
+                start: timeStart ? timeStart.padStart(5, '0') : "00:00",
+                end: timeEnd ? timeEnd.padStart(5, '0') : "23:59"
             };
         }
     }
@@ -89,7 +108,7 @@ async function MosquesPage({ searchParams }: { searchParams?: { [key: string]: s
         <div className="container mx-auto py-4">
             <h1 className="text-3xl font-bold mb-8 text-center">Find Mosques prayer time</h1>
 
-            <MosqueFilters initialFilters={params} />
+            <MosqueFilters initialFilters={searchParams} />
 
             <Suspense fallback={<Loading />}>
                 <MosqueList mosques={mosques} />
@@ -97,5 +116,3 @@ async function MosquesPage({ searchParams }: { searchParams?: { [key: string]: s
         </div>
     );
 }
-
-export default MosquesPage;
