@@ -13,75 +13,80 @@ L.Icon.Default.mergeOptions({
 });
 
 interface MapProps {
+    /** Controlled position [latitude, longitude] */
     position: [number, number];
-    onLocationSelect?: (lat: number, lng: number) => void;
-    onPositionChange?: (position: [number, number]) => void;
+    /** Called when user moves marker or clicks map */
+    onLocationSelect: (lat: number, lng: number) => void;
 }
 
-export default function Map({
-    position,
-    onLocationSelect,
-    onPositionChange
-}: MapProps) {
-    const mapRef = useRef<HTMLDivElement>(null);
-    const leafletMapRef = useRef<L.Map | null>(null);
+export default function Map({ position, onLocationSelect }: MapProps) {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const mapRef = useRef<L.Map | null>(null);
+    const markerRef = useRef<L.Marker | null>(null);
 
     useEffect(() => {
-        if (!mapRef.current || leafletMapRef.current) return;
+        const [lat, lng] = position;
+        // Initialize map once
+        if (!mapRef.current && containerRef.current) {
+            const map = L.map(containerRef.current).setView([lat, lng], 15);
+            mapRef.current = map;
 
-        const fallback: [number, number] = [26.75894634440903, 83.36477279663087];
+            // Base layers
+            const streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+            });
+            const satellite = L.tileLayer(
+                'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                { attribution: 'Tiles &copy; Esri' }
+            );
+            const labels = L.tileLayer(
+                'https://stamen-tiles.a.ssl.fastly.net/toner-labels/{z}/{x}/{y}.png',
+                { attribution: 'Labels &copy; Stamen', pane: 'overlayPane' }
+            );
 
-        const initializeMap = (lat: number, lng: number) => {
-            const map = L.map(mapRef.current!).setView([lat, lng], 13);
-            leafletMapRef.current = map;
+            // Add default layers
+            streets.addTo(map);
+            labels.addTo(map);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
-            }).addTo(map);
+            // Layer control
+            L.control.layers(
+                { Streets: streets, Satellite: satellite },
+                { Labels: labels },
+                { position: 'topright' }
+            ).addTo(map);
 
-            const marker = L.marker([lat, lng]).addTo(map);
-            marker.bindPopup("Selected Location").openPopup();
+            // Draggable marker
+            const marker = L.marker([lat, lng], { draggable: true }).addTo(map);
+            markerRef.current = marker;
 
-            map.on('click', (e: L.LeafletMouseEvent) => {
-                const { lat, lng } = e.latlng;
-                marker.setLatLng([lat, lng]);
-                marker.getPopup()?.setContent("Selected Location").openOn(map);
-
-                onLocationSelect?.(lat, lng);
-                onPositionChange?.([lat, lng]);
+            // Event: user drags marker
+            marker.on('dragend', () => {
+                const p = marker.getLatLng();
+                onLocationSelect(p.lat, p.lng);
             });
 
-            // Inform parent of the initial location
-            onLocationSelect?.(lat, lng);
-            onPositionChange?.([lat, lng]);
-        };
-
-        if (typeof window !== 'undefined' && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    const { latitude, longitude } = pos.coords;
-                    initializeMap(latitude, longitude);
-                },
-                () => {
-                    initializeMap(fallback[0], fallback[1]);
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-            );
-        } else {
-            initializeMap(fallback[0], fallback[1]);
+            // Event: user clicks map
+            map.on('click', (e: L.LeafletMouseEvent) => {
+                marker.setLatLng(e.latlng);
+                onLocationSelect(e.latlng.lat, e.latlng.lng);
+            });
+        } else if (mapRef.current && markerRef.current) {
+            // Update existing marker and view when position prop changes
+            markerRef.current.setLatLng([lat, lng]);
+            mapRef.current.panTo([lat, lng]);
         }
-    }, []);
 
-    useEffect(() => {
         return () => {
-            leafletMapRef.current?.remove();
-            leafletMapRef.current = null;
+            if (mapRef.current) {
+                mapRef.current.remove();
+                mapRef.current = null;
+            }
         };
-    }, []);
+    }, [position, onLocationSelect]);
 
     return (
         <div
-            ref={mapRef}
+            ref={containerRef}
             className="w-full h-full rounded overflow-hidden"
             style={{ height: '100%', width: '100%' }}
         />

@@ -20,7 +20,7 @@ type MosquePageParams = {
 
 // Update the type definition for generateMetadata
 export async function generateMetadata({ params }: MosquePageParams): Promise<Metadata> {
-    const mosqId = await params?.id;
+    const mosqId = params.id;
     const response = await getMosqById(mosqId);
 
     if (!response.success) {

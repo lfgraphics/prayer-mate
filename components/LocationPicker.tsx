@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { useCallback } from 'react';
 
 // Define the props interface
 interface LocationPickerProps {
@@ -14,92 +13,60 @@ interface LocationPickerProps {
 // Dynamically import the map component with SSR disabled
 const Map = dynamic(
     () => import('./Map'),
-    { 
+    {
         ssr: false,
-        loading: () => <div className="w-full h-full bg-muted flex items-center justify-center">Loading map...</div>
+        loading: () => (
+            <div className="w-full h-full bg-muted flex items-center justify-center">
+                Loading map...
+            </div>
+        )
     }
 );
 
 export default function LocationPicker({
     onLocationSelect,
-    initialLatitude = 51.505,
-    initialLongitude = -0.09
+    initialLatitude = 26.7589463,
+    initialLongitude = 83.3647728
 }: LocationPickerProps) {
+    // Controlled position state: [lat, lng]
     const [position, setPosition] = useState<[number, number]>([
-        initialLatitude || 51.505,
-        initialLongitude || -0.09
+        initialLatitude,
+        initialLongitude
     ]);
 
-    // Get user location with better error handling
-    // Update the getUserLocation function in LocationPicker.tsx
-    
-    const getUserLocation = useCallback(() => {
-        if (typeof window === 'undefined') {
-            console.log("Running on server side, geolocation not available");
-            return;
-        }
-        
-        if (!navigator.geolocation) {
-            console.log("Geolocation is not supported by this browser");
-            return;
-        }
-        
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-        };
-        
-        try {
-            navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-                if (result.state === 'granted' || result.state === 'prompt') {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => {
-                            const { latitude, longitude } = position.coords;
-                            setPosition([latitude, longitude]);
-                            onLocationSelect(latitude, longitude);
-                        },
-                        (error) => {
-                            // More detailed error handling
-                            let errorMessage = "Unknown error";
-                            switch(error.code) {
-                                case error.PERMISSION_DENIED:
-                                    errorMessage = "User denied the request for geolocation";
-                                    break;
-                                case error.POSITION_UNAVAILABLE:
-                                    errorMessage = "Location information is unavailable";
-                                    break;
-                                case error.TIMEOUT:
-                                    errorMessage = "The request to get user location timed out";
-                                    break;
-                            }
-                            console.error(`Geolocation error: ${errorMessage}`);
-                        },
-                        options
-                    );
-                } else {
-                    console.log("Geolocation permission denied");
-                }
-            });
-        } catch (error) {
-            console.error("Failed to get location:", error);
-        }
-    }, [onLocationSelect, setPosition]);
+    // Callback for when Map triggers a location change
+    const handleMapSelect = useCallback((lat: number, lng: number) => {
+        setPosition([lat, lng]);
+        onLocationSelect(lat, lng);
+    }, [onLocationSelect]);
 
-    // Try to get user location on component mount
+    // Try to get user location on mount
+    const getUserLocation = useCallback(() => {
+        if (typeof window === 'undefined' || !navigator.geolocation) return;
+        navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+            if (result.state === 'granted' || result.state === 'prompt') {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const { latitude, longitude } = pos.coords;
+                        setPosition([latitude, longitude]);
+                        onLocationSelect(latitude, longitude);
+                    },
+                    (err) => console.error('Geolocation error', err),
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            }
+        });
+    }, [onLocationSelect]);
+
     useEffect(() => {
-        if ((!initialLatitude || !initialLongitude || 
-            (initialLatitude === 0 && initialLongitude === 0))) {
-            getUserLocation();
-        }
-    }, [initialLatitude, initialLongitude, getUserLocation]);
+        getUserLocation();
+    }, [getUserLocation]);
 
     return (
         <div className="w-full h-full">
-            <Map 
-                position={position} 
-                onPositionChange={setPosition} 
-                onLocationSelect={onLocationSelect} 
+            <Map
+                position={position}
+                onLocationSelect={handleMapSelect}
             />
         </div>
     );

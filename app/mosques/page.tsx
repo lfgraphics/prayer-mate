@@ -3,7 +3,6 @@ import MosqueList from '@/components/MosqueList';
 import MosqueFilters from '@/components/MosqueFilters';
 import { getMosqs } from "@/actions/mosqActions";
 import Loading from '../loading';
-// import { use } from 'react';
 
 export const metadata = {
     title: 'Mosques | Prayer Mate',
@@ -11,52 +10,39 @@ export const metadata = {
     keywords: 'mosque, prayer times, islamic centers, masjid'
 };
 
-type Params = Promise<{ slug: string }>
-type SearchParams = {
-    by?: string;
-    lat?: string;
-    lng?: string;
-    radius?: string;
-    prayerTime?: string;
-    query?: string;
-    timeStart?: string;
-    timeEnd?: string;
-};
 // Convert to a client component to avoid searchParams issues
-export default async function MosquesPage(props: {
-    params: Params
-    searchParams: SearchParams
+export default async function MosquesPage({
+    params,
+    searchParams,
+}: {
+    params: {};
+    searchParams: { [key: string]: string | string[] | undefined };
 }) {
-    // const params = use(props.params)
-    const searchParams = await props.searchParams
-    const query = searchParams.query
-    const by = searchParams.by
-    const lat = searchParams.lat
-    const lng = searchParams.lng
-    const radius = searchParams.radius
-    const prayerTime = searchParams.prayerTime
-    const timeStart = searchParams.timeStart
-    const timeEnd = searchParams.timeEnd
-    // Instead of using Object.entries, access properties directly
+    // Create a copy of searchParams to avoid direct access
+    const searchParamsObj = Object.fromEntries(
+        Object.entries(searchParams || {})
+    );
+    
     let filterParams: any = {};
 
     // Check if coordinates search
-    if (by === "coordinates" && lat && lng) {
+    if (searchParamsObj.by === "coordinates" && searchParamsObj.lat && searchParamsObj.lng) {
         filterParams.by = "coordinates";
         filterParams.coordinates = [
-            parseFloat(lng),
-            parseFloat(lat)
+            parseFloat(searchParamsObj.lng as string),
+            parseFloat(searchParamsObj.lat as string)
         ];
 
-        if (radius) {
-            filterParams.radius = parseInt(radius);
+        if (searchParamsObj.radius) {
+            filterParams.radius = parseInt(searchParamsObj.radius as string);
         }
     }
 
-    if (by === "prayerTime") {
+    if (searchParamsObj.by === "prayerTime") {
         filterParams.by = "prayerTime";
-
-        if (prayerTime) {
+        
+        if (searchParamsObj.prayerTime) {
+            const prayerTime = searchParamsObj.prayerTime as string;
             const [hours, minutes] = prayerTime.split(':').map(Number);
 
             let endHours = hours;
@@ -79,14 +65,14 @@ export default async function MosquesPage(props: {
                 end: endTime
             };
 
-            if (query) {
-                filterParams.prayerName = query;
+            if (searchParamsObj.query) {
+                filterParams.prayerName = searchParamsObj.query as string;
             }
         }
-        else if (timeStart || timeEnd) {
+        else if (searchParamsObj.timeStart || searchParamsObj.timeEnd) {
             filterParams.timeRange = {
-                start: timeStart ? timeStart.padStart(5, '0') : "00:00",
-                end: timeEnd ? timeEnd.padStart(5, '0') : "23:59"
+                start: searchParamsObj.timeStart ? (searchParamsObj.timeStart as string).padStart(5, '0') : "00:00",
+                end: searchParamsObj.timeEnd ? (searchParamsObj.timeEnd as string).padStart(5, '0') : "23:59"
             };
         }
     }
@@ -108,7 +94,7 @@ export default async function MosquesPage(props: {
         <div className="container mx-auto py-4">
             <h1 className="text-3xl font-bold mb-8 text-center">Find Mosques prayer time</h1>
 
-            <MosqueFilters initialFilters={searchParams} />
+            <MosqueFilters initialFilters={searchParamsObj} />
 
             <Suspense fallback={<Loading />}>
                 <MosqueList mosques={mosques} />

@@ -57,41 +57,49 @@ export default function MosqueFilters({ initialFilters }: FiltersProps) {
     };
 
     const handleUseCurrentLocation = async () => {
-        await navigator.permissions.query({ name: "geolocation" }).then((result) => {
-            if (result.state === "granted") {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        setFilters(prev => ({
-                            ...prev,
-                            lat: position.coords.latitude.toString(),
-                            lng: position.coords.longitude.toString()
-                        }))
-                        handleSubmit();
-                    },
-                    handleLocationError
-                )
-            } else {
-                alert({
-                    heading: "Location Permission",
-                    message: "We need your location to show nearby Mosques. Please allow when prompted.",
-                    cancelText: "No Thanks",
-                    actionText: "Allow",
-                    onConfirm: () => {
-                        navigator.geolocation.getCurrentPosition(
-                            (position) => {
-                                setFilters(prev => ({
-                                    ...prev,
-                                    lat: position.coords.latitude.toString(),
-                                    lng: position.coords.longitude.toString()
-                                }))
-                            },
-                            handleLocationError
-                        )
-                    }
-                })
-            }
-            handleSubmit();
-        })
+        const { state } = await navigator.permissions.query({ name: "geolocation" });
+        if (state === "granted" || state === "prompt") {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude.toString();
+                    const lng = pos.coords.longitude.toString();
+
+                    // Build params locally—no waiting on React state
+                    const params = new URLSearchParams({
+                        by: "coordinates",
+                        lat,
+                        lng,
+                        radius: filters.radius
+                    });
+
+                    startTransition(() => {
+                        router.push(`/mosques?${params.toString()}`);
+                    });
+                },
+                handleLocationError,
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        } else {
+            alert({
+                heading: "Location Permission",
+                message: "We need your location to show nearby Mosques. Please allow when prompted.",
+                cancelText: "No Thanks",
+                actionText: "Allow",
+                onConfirm: () => {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            setFilters(prev => ({
+                                ...prev,
+                                lat: position.coords.latitude.toString(),
+                                lng: position.coords.longitude.toString()
+                            }))
+                        },
+                        handleLocationError
+                    )
+                }
+            })
+        }
+        handleSubmit();
     };
 
     const handleLocationError = (error: GeolocationPositionError) => {

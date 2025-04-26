@@ -42,25 +42,25 @@ export default function Footer() {
                         </nav>
                     </div>
 
-                    <div className="space-y-3">
-                        <h3 className="text-lg font-semibold">For Imams</h3>
-                        <div>
-                            <SignedIn>
-                                {localUser && localUser?.publicMetadata.role !== 'imam' && <Link href="/mosques/create">
+                    <SignedIn>
+                        {localUser && localUser?.publicMetadata.role !== 'imam' || localUser?.publicMetadata.role !== 'admin' && <Link href="/mosques/create">
+                            <div className="space-y-3">
+                                <h3 className="text-lg font-semibold">For Imams</h3>
+                                <div>
                                     <Button variant="default">Enrol as an Imam</Button>
-                                </Link>}
-                            </SignedIn>
-                            <p className="mt-2 text-sm text-muted-foreground">
-                                Are you an Imam? Register your mosque and help the community.
-                            </p>
-                        </div>
-                    </div>
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        Are you an Imam? Register your mosque and help the community.
+                                    </p>
+                                </div>
+                            </div>
+                        </Link>}
+                    </SignedIn>
                 </div>
 
                 <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
                     <p>© {new Date().getFullYear()} Prayer Mate. All rights reserved.</p>
                 </div>
             </div>
-        </footer>
+        </footer >
     );
 }

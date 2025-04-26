@@ -1,0 +1,21 @@
+{
+    "name": "Prayer Times at your location",
+    "short_name": "Prayer Mate",
+    "description": "This web app shows prayer times at your location and any mosques around you. just by searching from your location or a mosque name.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#000000",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "any",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

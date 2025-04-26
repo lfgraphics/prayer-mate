@@ -1,16 +1,12 @@
 import { type Metadata } from 'next'
 import {
   ClerkProvider,
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
 } from '@clerk/nextjs'
 
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { AlertProvider } from '@/components/useAlert'
+import { ThemeProvider } from "@/components/theme-provider"
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
@@ -36,15 +32,22 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="en" suppressHydrationWarning>
         <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <Header />
-          <main className="flex-1">
-            <AlertProvider>
-              {children}
-            </AlertProvider>
-          </main>
-          <Footer />
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Header />
+            <main className="flex-1">
+              <AlertProvider>
+                {children}
+              </AlertProvider>
+            </main>
+            <Footer />
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

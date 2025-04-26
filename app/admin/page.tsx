@@ -98,7 +98,7 @@ export default function MosqueVerification() {
   };
 
   return (
-    <div>
+    <div className='container mx-auto my-2'>
       <h1 className="text-3xl font-bold mb-6">Mosque Verification</h1>
       
       <Card className="p-6 mb-6">
