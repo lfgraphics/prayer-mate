@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import ThemeChanger from './ThemeChanger';
+import { useState } from 'react';
 
 const NAV_LINKS = [
     { href: '/', label: 'Home' },
@@ -29,9 +30,14 @@ const NAV_LINKS = [
 ];
 
 export default function Header() {
+    const [sheetOpen, setSheetOpen] = useState(false);
     const pathname = usePathname();
     const { user } = useClerk();
     const isAdmin = user?.publicMetadata.role === 'admin';
+
+    const handleCloseSheet = () => {
+        setSheetOpen(false);
+    };
 
     const renderNavLinks = (onClick?: () => void) => (
         NAV_LINKS.map(({ href, label }) => (
@@ -48,7 +54,7 @@ export default function Header() {
 
     return (
         <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
-            <div className="flex h-12 items-center justify-between px-4 w-full">
+            <div className="flex h-12 w-full items-center px-4 justify-between">
                 {/* Logo */}
                 <Link href="/" className="text-lg font-bold text-primary">
                     Prayer Mate
@@ -70,12 +76,25 @@ export default function Header() {
                 </nav>
 
                 {/* Actions */}
-                <div className="flex items-center gap-2 -translate-x-6">
+                <div className="flex items-center gap-2">
                     <ThemeChanger />
 
-                    {/* Mobile Menu */}
+                    <SignedIn>
+                        <UserButton />
+                    </SignedIn>
+                    <div className="hidden md-block">
+                        <SignedOut>
+                            <SignInButton mode="modal">
+                                <Button variant="ghost" size="sm">Sign In</Button>
+                            </SignInButton>
+                            <SignUpButton mode="modal">
+                                <Button variant="default" size="sm">Sign Up</Button>
+                            </SignUpButton>
+                        </SignedOut>
+                    </div>
+
                     <div className="md:hidden">
-                        <Sheet>
+                        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
                             <SheetTrigger asChild>
                                 <Button variant="outline" size="icon" className="h-8 w-8">
                                     <Menu className="h-4 w-4" />
@@ -87,8 +106,8 @@ export default function Header() {
                                     <SheetTitle className="text-lg font-semibold">Menu</SheetTitle>
                                     <SheetDescription></SheetDescription>
                                 </SheetHeader>
-                                <nav className="mt-4 ml-4 flex flex-col gap-2">
-                                    {renderNavLinks()}
+                                <nav className="mt-4 mx-4 flex flex-col gap-2">
+                                    {renderNavLinks(() => handleCloseSheet())}
                                     <SignedIn>
                                         {isAdmin && (
                                             <Link
@@ -98,38 +117,19 @@ export default function Header() {
                                                 Dashboard
                                             </Link>
                                         )}
-                                        <div className="mt-4">
-                                            <UserButton afterSignOutUrl="/" />
-                                        </div>
                                     </SignedIn>
+                                    <SignedOut>
+                                        <SignInButton mode="modal">
+                                            <Button variant="ghost" size="sm">Sign In</Button>
+                                        </SignInButton>
+                                        <SignUpButton mode="modal">
+                                            <Button variant="default" size="sm">Sign Up</Button>
+                                        </SignUpButton>
+                                    </SignedOut>
                                 </nav>
                             </SheetContent>
                         </Sheet>
                     </div>
-
-                    {/* Auth Buttons */}
-                    <SignedOut>
-                        <div className="hidden md:block">
-                            <SignInButton mode="modal">
-                                <Button variant="ghost" size="sm">Sign In</Button>
-                            </SignInButton>
-                            <SignUpButton mode="modal">
-                                <Button variant="default" size="sm">Sign Up</Button>
-                            </SignUpButton>
-                        </div>
-                        <div className="md:hidden">
-                            <SignInButton mode="modal">
-                                <Button variant="ghost" size="sm" className="h-8 px-2">Sign In</Button>
-                            </SignInButton>
-                        </div>
-                    </SignedOut>
-
-                    {/* User Menu on desktop */}
-                    <SignedIn>
-                        <div className="hidden md:block">
-                            <UserButton afterSignOutUrl="/" />
-                        </div>
-                    </SignedIn>
                 </div>
             </div>
         </header>

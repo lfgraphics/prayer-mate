@@ -1,10 +1,64 @@
+# Prayer Mate
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## About Prayer Mate
+
+Prayer Mate is a web application that helps users find prayer times at their location and discover mosques nearby. The app provides a user-friendly interface for:
+
+- Finding mosques by name, location, or thier current location
+- Viewing detailed prayer times for each mosque
+- Searching for mosques with specific prayer times
+- Getting directions to mosques
+- Viewing mosque photos and information
+
+## Features
+
+### For Users
+
+- **Mosque Search**: Find mosques by name, location, or using your current coordinates
+- **Prayer Time Search**: Find mosques with specific prayer times (Fajr, Zohar, Asr, Maghrib, Isha, Juma)
+- **Detailed Mosque Pages**: View comprehensive information about each mosque including:
+  - Prayer times (regular and special prayers)
+  - Location with interactive map
+  - Mosque photos
+  - Imam information
+  - Direction links to Google Maps
+- **Responsive Design**: Works on mobile, tablet, and desktop devices
+- **Dark/Light Mode**: Toggle between dark and light themes
+
+### For Imams
+
+- **Mosque Management**: Create and manage mosque information
+- **Prayer Time Updates**: Set and update prayer times for regular and special prayers
+- **Photo Gallery**: Upload and manage mosque photos
+
+### For Admins
+
+- **Verification Dashboard**: Review and verify mosque submissions
+- **Mosque Management**: Approve or reject mosque submissions
 
 ## Getting Started
 
-First, run the development server:
+## Live Demo
+
+You can try the live application at [kmwf-prayermate.vercel.app](https://kmwf-prayermate.vercel.app/)
+
+### For Developers
+
+#### Fork and Clone
+
+1. Fork the repository from [github.com/lfgraphics/prayer-mate](https://github.com/lfgraphics/prayer-mate)
+2. Clone your forked repository:
 
 ```bash
+
+git clone https://github.com/lfgraphics/prayer-mate.git
+cd prayer-mate
+npm install
+# or
+yarn install
+
 npm run dev
 # or
 yarn dev
@@ -12,6 +66,7 @@ yarn dev
 pnpm dev
 # or
 bun dev
+
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
