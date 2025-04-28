@@ -18,6 +18,7 @@ import { convertToAmPm } from '@/utils/format';
 import Image from 'next/image';
 import MosqueMap from '@/components/MosqueMap';
 import Loading from '@/app/loading';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 export default function MosqueDetails() {
     const params = useParams();
@@ -185,54 +186,102 @@ export default function MosqueDetails() {
                 </Card>
 
                 <Card className="p-6">
-                    <h2 className="text-xl font-bold mb-4">Prayer Times</h2>
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center border-b pb-2">
-                            <div className="flex items-center gap-2">
-                                <Clock size={16} className="text-primary" />
-                                <span>Fajr</span>
-                            </div>
-                            <span>{convertToAmPm(`${mosque.prayerTimes.fajr.hours}:${mosque.prayerTimes.fajr.minutes}`)}</span>
-                        </div>
-                        <div className="flex justify-between items-center border-b pb-2">
-                            <div className="flex items-center gap-2">
-                                <Clock size={16} className="text-primary" />
-                                <span>Zohar</span>
-                            </div>
-                            <span>{convertToAmPm(`${mosque.prayerTimes.zohar.hours}:${mosque.prayerTimes.zohar.minutes}`)}</span>
-                        </div>
-                        <div className="flex justify-between items-center border-b pb-2">
-                            <div className="flex items-center gap-2">
-                                <Clock size={16} className="text-primary" />
-                                <span>Asr</span>
-                            </div>
-                            <span>{convertToAmPm(`${mosque.prayerTimes.asr.hours}:${mosque.prayerTimes.asr.minutes}`)}</span>
-                        </div>
-                        <div className="flex justify-between items-center border-b pb-2">
-                            <div className="flex items-center gap-2">
-                                <Clock size={16} className="text-primary" />
-                                <span>Maghrib</span>
-                            </div>
-                            <span>{convertToAmPm(`${mosque.prayerTimes.maghrib.hours}:${mosque.prayerTimes.maghrib.minutes}`)}</span>
-                        </div>
-                        <div className="flex justify-between items-center border-b pb-2">
-                            <div className="flex items-center gap-2">
-                                <Clock size={16} className="text-primary" />
-                                <span>Isha</span>
-                            </div>
-                            <span>{convertToAmPm(`${mosque.prayerTimes.isha.hours}:${mosque.prayerTimes.isha.minutes}`)}</span>
-                        </div>
-                        {mosque.prayerTimes.juma && mosque.prayerTimes.juma.hours !== undefined && (
-                            <div className="flex justify-between items-center border-b pb-2">
-                                <div className="flex items-center gap-2">
-                                    <Calendar size={16} className="text-primary" />
-                                    <span>Juma</span>
-                                </div>
-                                <span>{convertToAmPm(`${mosque.prayerTimes.juma.hours}:${mosque.prayerTimes.juma.minutes || 0}`)}</span>
-                            </div>
-                        )}
+                    <div className="flex items-center gap-2 mb-4">
+                        <Clock size={20} className="text-primary" />
+                        <h2 className="text-xl font-bold">Daily Prayer Times</h2>
                     </div>
+
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Prayer</TableHead>
+                                <TableHead>Azan</TableHead>
+                                <TableHead>Iqamah</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell className="font-medium">Fajr</TableCell>
+                                <TableCell>{mosque.azanTimes?.fajr ? convertToAmPm(`${mosque.azanTimes.fajr.hours}:${mosque.azanTimes.fajr.minutes}`) : '-'}</TableCell>
+                                <TableCell>{convertToAmPm(`${mosque.prayerTimes?.fajr?.hours}:${mosque.prayerTimes?.fajr?.minutes}`)}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell className="font-medium">Zohar</TableCell>
+                                <TableCell>{mosque.azanTimes?.zohar ? convertToAmPm(`${mosque.azanTimes.zohar.hours}:${mosque.azanTimes.zohar.minutes}`) : '-'}</TableCell>
+                                <TableCell>{convertToAmPm(`${mosque.prayerTimes?.zohar?.hours}:${mosque.prayerTimes?.zohar?.minutes}`)}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell className="font-medium">Asr</TableCell>
+                                <TableCell>{mosque.azanTimes?.asr ? convertToAmPm(`${mosque.azanTimes.asr.hours}:${mosque.azanTimes.asr.minutes}`) : '-'}</TableCell>
+                                <TableCell>{convertToAmPm(`${mosque.prayerTimes?.asr?.hours}:${mosque.prayerTimes?.asr?.minutes}`)}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell className="font-medium">Maghrib</TableCell>
+                                <TableCell>{mosque.azanTimes?.maghrib ? convertToAmPm(`${mosque.azanTimes.maghrib.hours}:${mosque.azanTimes.maghrib.minutes}`) : '-'}</TableCell>
+                                <TableCell>{convertToAmPm(`${mosque.prayerTimes?.maghrib?.hours}:${mosque.prayerTimes?.maghrib?.minutes}`)}</TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell className="font-medium">Isha</TableCell>
+                                <TableCell>{mosque.azanTimes?.isha ? convertToAmPm(`${mosque.azanTimes.isha.hours}:${mosque.azanTimes.isha.minutes}`) : '-'}</TableCell>
+                                <TableCell>{convertToAmPm(`${mosque.prayerTimes?.isha?.hours}:${mosque.prayerTimes?.isha?.minutes}`)}</TableCell>
+                            </TableRow>
+                            {mosque.prayerTimes?.juma && (
+                                <TableRow>
+                                    <TableCell className="font-medium">Juma</TableCell>
+                                    <TableCell>{mosque.azanTimes?.juma ? convertToAmPm(`${mosque.azanTimes.juma.hours}:${mosque.azanTimes.juma.minutes}`) : '-'}</TableCell>
+                                    <TableCell>{convertToAmPm(`${mosque.prayerTimes.juma.hours}:${mosque.prayerTimes.juma.minutes}`)}</TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
                 </Card>
+                <h2 className="text-xl font-bold mb-4">Prayer Times</h2>
+                <div className="space-y-3">
+                    <div className="flex justify-between items-center border-b pb-2">
+                        <div className="flex items-center gap-2">
+                            <Clock size={16} className="text-primary" />
+                            <span>Fajr</span>
+                        </div>
+                        <span>{convertToAmPm(`${mosque.prayerTimes.fajr.hours}:${mosque.prayerTimes.fajr.minutes}`)}</span>
+                    </div>
+                    <div className="flex justify-between items-center border-b pb-2">
+                        <div className="flex items-center gap-2">
+                            <Clock size={16} className="text-primary" />
+                            <span>Zohar</span>
+                        </div>
+                        <span>{convertToAmPm(`${mosque.prayerTimes.zohar.hours}:${mosque.prayerTimes.zohar.minutes}`)}</span>
+                    </div>
+                    <div className="flex justify-between items-center border-b pb-2">
+                        <div className="flex items-center gap-2">
+                            <Clock size={16} className="text-primary" />
+                            <span>Asr</span>
+                        </div>
+                        <span>{convertToAmPm(`${mosque.prayerTimes.asr.hours}:${mosque.prayerTimes.asr.minutes}`)}</span>
+                    </div>
+                    <div className="flex justify-between items-center border-b pb-2">
+                        <div className="flex items-center gap-2">
+                            <Clock size={16} className="text-primary" />
+                            <span>Maghrib</span>
+                        </div>
+                        <span>{convertToAmPm(`${mosque.prayerTimes.maghrib.hours}:${mosque.prayerTimes.maghrib.minutes}`)}</span>
+                    </div>
+                    <div className="flex justify-between items-center border-b pb-2">
+                        <div className="flex items-center gap-2">
+                            <Clock size={16} className="text-primary" />
+                            <span>Isha</span>
+                        </div>
+                        <span>{convertToAmPm(`${mosque.prayerTimes.isha.hours}:${mosque.prayerTimes.isha.minutes}`)}</span>
+                    </div>
+                    {mosque.prayerTimes.juma && mosque.prayerTimes.juma.hours !== undefined && (
+                        <div className="flex justify-between items-center border-b pb-2">
+                            <div className="flex items-center gap-2">
+                                <Calendar size={16} className="text-primary" />
+                                <span>Juma</span>
+                            </div>
+                            <span>{convertToAmPm(`${mosque.prayerTimes.juma.hours}:${mosque.prayerTimes.juma.minutes || 0}`)}</span>
+                        </div>
+                    )}
+                </div>
             </div>
 
             {mosque.photos && mosque.photos.length > 0 && (

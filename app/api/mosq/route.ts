@@ -1,6 +1,7 @@
 import { addMosq, getMosqs, getMosqById, updateMosq, deleteMosq } from "@/actions/mosqActions";
 import { NextRequest, NextResponse } from "next/server";
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { auth, currentUser, clerkClient } from '@clerk/nextjs/server';
+import { notifyAdmins } from "@/actions/pushNotificationActions";
 
 // GET route remains unchanged as it's public
 export async function GET(request: NextRequest) {
@@ -99,6 +100,37 @@ export async function POST(request: NextRequest) {
             id: userId,
             imam: `${user?.firstName} ${user?.lastName}`
         });
+        
+        // If mosque creation was successful, notify all admins
+        if (response.success) {
+            try {
+                // Get all users with admin role from Clerk
+                const client = await clerkClient();
+                const adminUsersResponse = await client.users.getUserList({
+                    query: JSON.stringify({
+                        publicMetadata: { role: "admin" }
+                    })
+                });
+                
+                // Use the notifyAdmins action to send notifications
+                await notifyAdmins(
+                    adminUsersResponse.data,
+                    {
+                        title: "New Mosque Created",
+                        body: `A new mosque "${body.name}" was created by ${user?.firstName} ${user?.lastName}`,
+                        data: {
+                            url: `/admin/mosques/${response.mosq?._id}`,
+                            mosqueId: response.mosq?._id,
+                            type: "new_mosque"
+                        }
+                    }
+                );
+            } catch (notificationError) {
+                // Log notification error but don't fail the request
+                console.error("Error sending admin notifications:", notificationError);
+            }
+        }
+        
         return NextResponse.json(response, {
             status: response.success ? 201 : 400
         });
@@ -110,6 +142,7 @@ export async function POST(request: NextRequest) {
     }
 }
 
+// Remove the helper function since we now use the action
 export async function PUT(request: NextRequest) {
     try {
         const { userId } = await auth();

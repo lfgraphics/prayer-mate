@@ -32,6 +32,14 @@ export interface MosqType {
         eidulfitr?: OptionalTime;
         eidulazha?: OptionalTime;
     };
+    azanTimes?: {
+        fajr?: OptionalTime;
+        zohar?: OptionalTime;
+        asr?: OptionalTime;
+        maghrib?: OptionalTime;
+        isha?: OptionalTime;
+        juma?: OptionalTime;
+    };
     photos: string[];
     verified: boolean;
 }
@@ -82,6 +90,14 @@ const MosqSchema = new Schema<MosqType>(
             juma: optionalTimeSchema,
             eidulfitr: optionalTimeSchema,
             eidulazha: optionalTimeSchema
+        },
+        azanTimes: {
+            fajr: optionalTimeSchema,
+            zohar: optionalTimeSchema,
+            asr: optionalTimeSchema,
+            maghrib: optionalTimeSchema,
+            isha: optionalTimeSchema,
+            juma: optionalTimeSchema
         },
         photos: { type: [String], default: [] },
         verified: { type: Boolean, required: true, default: false }

@@ -9,6 +9,8 @@ import { AlertProvider } from '@/components/useAlert'
 import { ThemeProvider } from "@/components/theme-provider"
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { Toaster } from 'sonner';
+import PushNotificationPrompt from '@/components/PushNotificationPrompt';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -44,6 +46,8 @@ export default function RootLayout({
             <main className="flex-1">
               <AlertProvider>
                 {children}
+                <Toaster />
+                <PushNotificationPrompt />
               </AlertProvider>
             </main>
             <Footer />

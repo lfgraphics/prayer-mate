@@ -45,6 +45,14 @@ export default function CreateMosqueForm() {
         isha: { hours: 20, minutes: 0 },
         juma: { hours: 13, minutes: 30 }
     });
+    const [azanTimes, setAzanTimes] = useState({
+        fajr: { hours: 4, minutes: 45 },
+        zohar: { hours: 12, minutes: 45 },
+        asr: { hours: 16, minutes: 45 },
+        maghrib: { hours: 17, minutes: 45 },
+        isha: { hours: 19, minutes: 45 },
+        juma: { hours: 13, minutes: 15 }
+    });
     const [photos, setPhotos] = useState<string[]>([]);
 
     const form = useForm<MosqueFormValues>({
@@ -74,6 +82,7 @@ export default function CreateMosqueForm() {
                 },
                 imam: '', // This will be set by the backend based on the authenticated user
                 prayerTimes,
+                azanTimes,
                 photos,
                 verified: false
             };
@@ -116,6 +125,20 @@ export default function CreateMosqueForm() {
         const [hours, minutes] = timeString.split(':').map(Number);
 
         setPrayerTimes(prev => ({
+            ...prev,
+            [prayer]: {
+                hours,
+                minutes
+            }
+        }));
+    };
+
+    // Handle azan time changes
+    const handleAzanTimeChange = (prayer: string, timeString: string) => {
+        // Parse the time string (format: HH:MM) into hours and minutes
+        const [hours, minutes] = timeString.split(':').map(Number);
+
+        setAzanTimes(prev => ({
             ...prev,
             [prayer]: {
                 hours,
@@ -291,89 +314,149 @@ export default function CreateMosqueForm() {
                     </TabsContent>
 
                     <TabsContent value="prayer-times">
-                        <CardContent>
-                            <div className="flex items-center gap-2 mb-4">
-                                <Clock size={20} className="text-primary" />
-                                <h2 className="text-xl font-bold">Set Prayer Times</h2>
-                            </div>
+                        <CardContent className="space-y-6">
                             <div className="space-y-4">
-                                {/* Required prayer times */}
-                                {['fajr', 'zohar', 'asr', 'maghrib', 'isha'].map((prayer) => (
-                                    <div key={prayer} className="grid grid-cols-3 gap-4 items-center">
-                                        <Label className="capitalize">{prayer}</Label>
-                                        <div>
+                                <h3 className="text-lg font-medium">Daily Prayer Times</h3>
+                                <p className="text-sm text-muted-foreground">
+                                    Set the Azan and Iqamah times for each prayer. Times should be in 24-hour format.
+                                </p>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-4">
+                                        <h4 className="font-medium">Azan Times</h4>
+                                        
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="fajr-azan" className="w-20">Fajr</Label>
+                                                <Input
+                                                    id="fajr-azan"
+                                                    type="time"
+                                                    value={`${azanTimes.fajr.hours.toString().padStart(2, '0')}:${azanTimes.fajr.minutes.toString().padStart(2, '0')}`}
+                                                    onChange={(e) => handleAzanTimeChange('fajr', e.target.value)}
+                                                />
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="zohar-azan" className="w-20">Zohar</Label>
+                                                <Input
+                                                    id="zohar-azan"
+                                                    type="time"
+                                                    value={`${azanTimes.zohar.hours.toString().padStart(2, '0')}:${azanTimes.zohar.minutes.toString().padStart(2, '0')}`}
+                                                    onChange={(e) => handleAzanTimeChange('zohar', e.target.value)}
+                                                />
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="asr-azan" className="w-20">Asr</Label>
+                                                <Input
+                                                    id="asr-azan"
+                                                    type="time"
+                                                    value={`${azanTimes.asr.hours.toString().padStart(2, '0')}:${azanTimes.asr.minutes.toString().padStart(2, '0')}`}
+                                                    onChange={(e) => handleAzanTimeChange('asr', e.target.value)}
+                                                />
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="maghrib-azan" className="w-20">Maghrib</Label>
+                                                <Input
+                                                    id="maghrib-azan"
+                                                    type="time"
+                                                    value={`${azanTimes.maghrib.hours.toString().padStart(2, '0')}:${azanTimes.maghrib.minutes.toString().padStart(2, '0')}`}
+                                                    onChange={(e) => handleAzanTimeChange('maghrib', e.target.value)}
+                                                />
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="isha-azan" className="w-20">Isha</Label>
+                                                <Input
+                                                    id="isha-azan"
+                                                    type="time"
+                                                    value={`${azanTimes.isha.hours.toString().padStart(2, '0')}:${azanTimes.isha.minutes.toString().padStart(2, '0')}`}
+                                                    onChange={(e) => handleAzanTimeChange('isha', e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="space-y-4">
+                                        <h4 className="font-medium">Iqamah Times</h4>
+                                        
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="fajr-iqamah" className="w-20">Fajr</Label>
+                                                <Input
+                                                    id="fajr-iqamah"
+                                                    type="time"
+                                                    value={`${prayerTimes.fajr.hours.toString().padStart(2, '0')}:${prayerTimes.fajr.minutes.toString().padStart(2, '0')}`}
+                                                    onChange={(e) => handlePrayerTimeChange('fajr', e.target.value)}
+                                                />
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="zohar-iqamah" className="w-20">Zohar</Label>
+                                                <Input
+                                                    id="zohar-iqamah"
+                                                    type="time"
+                                                    value={`${prayerTimes.zohar.hours.toString().padStart(2, '0')}:${prayerTimes.zohar.minutes.toString().padStart(2, '0')}`}
+                                                    onChange={(e) => handlePrayerTimeChange('zohar', e.target.value)}
+                                                />
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="asr-iqamah" className="w-20">Asr</Label>
+                                                <Input
+                                                    id="asr-iqamah"
+                                                    type="time"
+                                                    value={`${prayerTimes.asr.hours.toString().padStart(2, '0')}:${prayerTimes.asr.minutes.toString().padStart(2, '0')}`}
+                                                    onChange={(e) => handlePrayerTimeChange('asr', e.target.value)}
+                                                />
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="maghrib-iqamah" className="w-20">Maghrib</Label>
+                                                <Input
+                                                    id="maghrib-iqamah"
+                                                    type="time"
+                                                    value={`${prayerTimes.maghrib.hours.toString().padStart(2, '0')}:${prayerTimes.maghrib.minutes.toString().padStart(2, '0')}`}
+                                                    onChange={(e) => handlePrayerTimeChange('maghrib', e.target.value)}
+                                                />
+                                            </div>
+                                            
+                                            <div className="flex items-center gap-2">
+                                                <Label htmlFor="isha-iqamah" className="w-20">Isha</Label>
+                                                <Input
+                                                    id="isha-iqamah"
+                                                    type="time"
+                                                    value={`${prayerTimes.isha.hours.toString().padStart(2, '0')}:${prayerTimes.isha.minutes.toString().padStart(2, '0')}`}
+                                                    onChange={(e) => handlePrayerTimeChange('isha', e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="pt-4 border-t">
+                                    <h4 className="font-medium mb-3">Juma Prayer</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="flex items-center gap-2">
+                                            <Label htmlFor="juma-azan" className="w-20">Azan</Label>
                                             <Input
+                                                id="juma-azan"
                                                 type="time"
-                                                value={`${String(prayerTimes[prayer as keyof typeof prayerTimes].hours).padStart(2, '0')}:${String(prayerTimes[prayer as keyof typeof prayerTimes].minutes).padStart(2, '0')}`}
-                                                onChange={(e) => handlePrayerTimeChange(prayer, e.target.value)}
+                                                value={`${azanTimes.juma.hours.toString().padStart(2, '0')}:${azanTimes.juma.minutes.toString().padStart(2, '0')}`}
+                                                onChange={(e) => handleAzanTimeChange('juma', e.target.value)}
+                                            />
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <Label htmlFor="juma-khutba" className="w-20">Khutba</Label>
+                                            <Input
+                                                id="juma-khutba"
+                                                type="time"
+                                                value={`${prayerTimes.juma.hours.toString().padStart(2, '0')}:${prayerTimes.juma.minutes.toString().padStart(2, '0')}`}
+                                                onChange={(e) => handlePrayerTimeChange('juma', e.target.value)}
                                             />
                                         </div>
                                     </div>
-                                ))}
-                                
-                                {/* Optional prayer times with remove option */}
-                                {['juma', 'eidulfitr', 'eidulazha'].map((prayer) => (
-                                    prayerTimes[prayer as keyof typeof prayerTimes] && (
-                                        <div key={prayer} className="grid grid-cols-3 gap-4 items-center">
-                                            <Label className="capitalize">{prayer}</Label>
-                                            <div>
-                                                <Input
-                                                    type="time"
-                                                    value={`${String(prayerTimes[prayer as keyof typeof prayerTimes]?.hours || 0).padStart(2, '0')}:${String(prayerTimes[prayer as keyof typeof prayerTimes]?.minutes || 0).padStart(2, '0')}`}
-                                                    onChange={(e) => handlePrayerTimeChange(prayer, e.target.value)}
-                                                />
-                                            </div>
-                                            <Button 
-                                                variant="ghost" 
-                                                size="icon"
-                                                onClick={() => {
-                                                    setPrayerTimes(prev => {
-                                                        const newTimes = {...prev};
-                                                        delete newTimes[prayer as keyof typeof prayerTimes];
-                                                        return newTimes;
-                                                    });
-                                                }}
-                                                className="text-destructive"
-                                            >
-                                                <Trash size={16} />
-                                            </Button>
-                                        </div>
-                                    )
-                                ))}
-                                
-                                {/* Add optional prayer times */}
-                                <div className="mt-4">
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        size="sm"
-                                        onClick={() => {
-                                            const optionalPrayers = ['juma', 'eidulfitr', 'eidulazha'];
-                                            const missingPrayers = optionalPrayers.filter(
-                                                prayer => !prayerTimes[prayer as keyof typeof prayerTimes]
-                                            );
-                                            
-                                            if (missingPrayers.length > 0) {
-                                                setPrayerTimes(prev => ({
-                                                    ...prev,
-                                                    [missingPrayers[0]]: { hours: 12, minutes: 0 }
-                                                }));
-                                            }
-                                        }}
-                                        disabled={['juma', 'eidulfitr', 'eidulazha'].every(
-                                            prayer => !!prayerTimes[prayer as keyof typeof prayerTimes]
-                                        )}
-                                    >
-                                        {(() => {
-                                            const optionalPrayers = ['juma', 'eidulfitr', 'eidulazha'];
-                                            const missingPrayers = optionalPrayers.filter(
-                                                prayer => !prayerTimes[prayer as keyof typeof prayerTimes]
-                                            );
-                                            return missingPrayers.length > 0 
-                                                ? `Add ${missingPrayers[0].charAt(0).toUpperCase() + missingPrayers[0].slice(1)} Time` 
-                                                : 'All optional times added';
-                                        })()}
-                                    </Button>
                                 </div>
                             </div>
                         </CardContent>

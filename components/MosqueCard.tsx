@@ -109,18 +109,57 @@ const MosqueCard = ({ mosq }: { mosq: MosqType }) => {
               <TableHeader>
                 <TableRow>
                   <TableHead>Prayer</TableHead>
-                  <TableHead>Time</TableHead>
+                  <TableHead>Azan</TableHead>
+                  <TableHead>Iqamah</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow><TableCell>Fajr</TableCell><TableCell>{convertToAmPm(`${mosq.prayerTimes?.fajr?.hours}:${mosq.prayerTimes?.fajr?.minutes}`)}</TableCell></TableRow>
-                <TableRow><TableCell>Zohar</TableCell><TableCell>{convertToAmPm(`${mosq.prayerTimes?.zohar?.hours}:${mosq.prayerTimes?.zohar?.minutes}`)}</TableCell></TableRow>
-                <TableRow><TableCell>Asr</TableCell><TableCell>{convertToAmPm(`${mosq.prayerTimes?.asr?.hours}:${mosq.prayerTimes?.asr?.minutes}`)}</TableCell></TableRow>
-                <TableRow><TableCell>Maghrib</TableCell><TableCell>{convertToAmPm(`${mosq.prayerTimes?.maghrib?.hours}:${mosq.prayerTimes?.maghrib?.minutes}`)}</TableCell></TableRow>
-                <TableRow><TableCell>Isha</TableCell><TableCell>{convertToAmPm(`${mosq.prayerTimes?.isha?.hours}:${mosq.prayerTimes?.isha?.minutes}`)}</TableCell></TableRow>
-                {mosq.prayerTimes?.juma && <TableRow><TableCell>Juma</TableCell><TableCell>{convertToAmPm(`${mosq.prayerTimes?.juma?.hours}:${mosq.prayerTimes?.juma?.minutes}`)}</TableCell></TableRow>}
-                {mosq.prayerTimes?.eidulfitr && <TableRow><TableCell>Eid-ul-Fitr</TableCell><TableCell>{convertToAmPm(`${mosq.prayerTimes?.eidulfitr?.hours}:${mosq.prayerTimes?.eidulfitr?.minutes}`)}</TableCell></TableRow>}
-                {mosq.prayerTimes?.eidulazha && <TableRow><TableCell>Eid-ul-Azha</TableCell><TableCell>{convertToAmPm(`${mosq.prayerTimes?.eidulazha?.hours}:${mosq.prayerTimes?.eidulazha?.minutes}`)}</TableCell></TableRow>}
+                <TableRow>
+                  <TableCell>Fajr</TableCell>
+                  <TableCell>{mosq.azanTimes?.fajr ? convertToAmPm(`${mosq.azanTimes.fajr.hours}:${mosq.azanTimes.fajr.minutes}`) : '-'}</TableCell>
+                  <TableCell>{convertToAmPm(`${mosq.prayerTimes?.fajr?.hours}:${mosq.prayerTimes?.fajr?.minutes}`)}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Zohar</TableCell>
+                  <TableCell>{mosq.azanTimes?.zohar ? convertToAmPm(`${mosq.azanTimes.zohar.hours}:${mosq.azanTimes.zohar.minutes}`) : '-'}</TableCell>
+                  <TableCell>{convertToAmPm(`${mosq.prayerTimes?.zohar?.hours}:${mosq.prayerTimes?.zohar?.minutes}`)}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Asr</TableCell>
+                  <TableCell>{mosq.azanTimes?.asr ? convertToAmPm(`${mosq.azanTimes.asr.hours}:${mosq.azanTimes.asr.minutes}`) : '-'}</TableCell>
+                  <TableCell>{convertToAmPm(`${mosq.prayerTimes?.asr?.hours}:${mosq.prayerTimes?.asr?.minutes}`)}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Maghrib</TableCell>
+                  <TableCell>{mosq.azanTimes?.maghrib ? convertToAmPm(`${mosq.azanTimes.maghrib.hours}:${mosq.azanTimes.maghrib.minutes}`) : '-'}</TableCell>
+                  <TableCell>{convertToAmPm(`${mosq.prayerTimes?.maghrib?.hours}:${mosq.prayerTimes?.maghrib?.minutes}`)}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Isha</TableCell>
+                  <TableCell>{mosq.azanTimes?.isha ? convertToAmPm(`${mosq.azanTimes.isha.hours}:${mosq.azanTimes.isha.minutes}`) : '-'}</TableCell>
+                  <TableCell>{convertToAmPm(`${mosq.prayerTimes?.isha?.hours}:${mosq.prayerTimes?.isha?.minutes}`)}</TableCell>
+                </TableRow>
+                {mosq.prayerTimes?.juma && (
+                  <TableRow>
+                    <TableCell>Juma</TableCell>
+                    <TableCell>{mosq.azanTimes?.juma ? convertToAmPm(`${mosq.azanTimes.juma.hours}:${mosq.azanTimes.juma.minutes}`) : '-'}</TableCell>
+                    <TableCell>{convertToAmPm(`${mosq.prayerTimes?.juma?.hours}:${mosq.prayerTimes?.juma?.minutes}`)}</TableCell>
+                  </TableRow>
+                )}
+                {mosq.prayerTimes?.eidulfitr && (
+                  <TableRow>
+                    <TableCell>Eid-ul-Fitr</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>{convertToAmPm(`${mosq.prayerTimes?.eidulfitr?.hours}:${mosq.prayerTimes?.eidulfitr?.minutes}`)}</TableCell>
+                  </TableRow>
+                )}
+                {mosq.prayerTimes?.eidulazha && (
+                  <TableRow>
+                    <TableCell>Eid-ul-Azha</TableCell>
+                    <TableCell>-</TableCell>
+                    <TableCell>{convertToAmPm(`${mosq.prayerTimes?.eidulazha?.hours}:${mosq.prayerTimes?.eidulazha?.minutes}`)}</TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </AccordionContent>

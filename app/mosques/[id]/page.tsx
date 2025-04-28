@@ -149,28 +149,34 @@ const MosqueDetailPage = async ({ params }: { params: { id: string } }) => {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Prayer</TableHead>
-                                    <TableHead>Time</TableHead>
+                                    <TableHead>Azan</TableHead>
+                                    <TableHead>Iqamah</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 <TableRow>
                                     <TableCell className="font-medium">Fajr</TableCell>
+                                    <TableCell>{mosq.azanTimes?.fajr ? convertToAmPm(`${mosq.azanTimes.fajr.hours}:${mosq.azanTimes.fajr.minutes}`) : '-'}</TableCell>
                                     <TableCell>{convertToAmPm(`${mosq.prayerTimes?.fajr?.hours}:${mosq.prayerTimes?.fajr?.minutes}`)}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell className="font-medium">Zohar</TableCell>
+                                    <TableCell>{mosq.azanTimes?.zohar ? convertToAmPm(`${mosq.azanTimes.zohar.hours}:${mosq.azanTimes.zohar.minutes}`) : '-'}</TableCell>
                                     <TableCell>{convertToAmPm(`${mosq.prayerTimes?.zohar?.hours}:${mosq.prayerTimes?.zohar?.minutes}`)}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell className="font-medium">Asr</TableCell>
+                                    <TableCell>{mosq.azanTimes?.asr ? convertToAmPm(`${mosq.azanTimes.asr.hours}:${mosq.azanTimes.asr.minutes}`) : '-'}</TableCell>
                                     <TableCell>{convertToAmPm(`${mosq.prayerTimes?.asr?.hours}:${mosq.prayerTimes?.asr?.minutes}`)}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell className="font-medium">Maghrib</TableCell>
+                                    <TableCell>{mosq.azanTimes?.maghrib ? convertToAmPm(`${mosq.azanTimes.maghrib.hours}:${mosq.azanTimes.maghrib.minutes}`) : '-'}</TableCell>
                                     <TableCell>{convertToAmPm(`${mosq.prayerTimes?.maghrib?.hours}:${mosq.prayerTimes?.maghrib?.minutes}`)}</TableCell>
                                 </TableRow>
                                 <TableRow>
                                     <TableCell className="font-medium">Isha</TableCell>
+                                    <TableCell>{mosq.azanTimes?.isha ? convertToAmPm(`${mosq.azanTimes.isha.hours}:${mosq.azanTimes.isha.minutes}`) : '-'}</TableCell>
                                     <TableCell>{convertToAmPm(`${mosq.prayerTimes?.isha?.hours}:${mosq.prayerTimes?.isha?.minutes}`)}</TableCell>
                                 </TableRow>
                             </TableBody>
@@ -188,24 +194,27 @@ const MosqueDetailPage = async ({ params }: { params: { id: string } }) => {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Prayer</TableHead>
-                                    <TableHead>Time</TableHead>
+                                    <TableHead>Azan</TableHead>
+                                    <TableHead>Khutba</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {mosq.prayerTimes?.juma ? (
                                     <TableRow>
                                         <TableCell className="font-medium">Juma</TableCell>
+                                        <TableCell>{mosq.azanTimes?.juma ? convertToAmPm(`${mosq.azanTimes.juma.hours}:${mosq.azanTimes.juma.minutes}`) : '-'}</TableCell>
                                         <TableCell>{convertToAmPm(`${mosq.prayerTimes.juma.hours}:${mosq.prayerTimes.juma.minutes}`)}</TableCell>
                                     </TableRow>
                                 ) : (
                                     <TableRow>
-                                        <TableCell colSpan={2} className="text-center text-muted-foreground">No Juma time specified</TableCell>
+                                        <TableCell colSpan={3} className="text-center text-muted-foreground">No Juma time specified</TableCell>
                                     </TableRow>
                                 )}
 
                                 {mosq.prayerTimes?.eidulfitr ? (
                                     <TableRow>
                                         <TableCell className="font-medium">Eid-ul-Fitr</TableCell>
+                                        <TableCell>-</TableCell>
                                         <TableCell>
                                             {mosq.prayerTimes.eidulfitr.date &&
                                                 <div className="text-xs text-muted-foreground mb-1">
@@ -220,6 +229,7 @@ const MosqueDetailPage = async ({ params }: { params: { id: string } }) => {
                                 {mosq.prayerTimes?.eidulazha ? (
                                     <TableRow>
                                         <TableCell className="font-medium">Eid-ul-Azha</TableCell>
+                                        <TableCell>-</TableCell>
                                         <TableCell>
                                             {mosq.prayerTimes.eidulazha.date &&
                                                 <div className="text-xs text-muted-foreground mb-1">
@@ -233,7 +243,7 @@ const MosqueDetailPage = async ({ params }: { params: { id: string } }) => {
 
                                 {!mosq.prayerTimes?.eidulfitr && !mosq.prayerTimes?.eidulazha && !mosq.prayerTimes?.juma && (
                                     <TableRow>
-                                        <TableCell colSpan={2} className="text-center text-muted-foreground">No special prayer times specified</TableCell>
+                                        <TableCell colSpan={3} className="text-center text-muted-foreground">No special prayer times specified</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>

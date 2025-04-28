@@ -245,6 +245,29 @@ const Page = () => {
         }
     };
 
+    const handleAzanTimeChange = (prayer: string, timeString: string) => {
+        if (!updatedMosq) return;
+
+        // Parse the time string (format: HH:MM) into hours and minutes
+        const [hours, minutes] = timeString.split(':').map(Number);
+
+        setUpdatedMosq(prev => {
+            if (!prev || !prev.azanTimes) return prev;
+
+            return {
+                ...prev,
+                azanTimes: {
+                    ...prev.azanTimes,
+                    [prayer]: {
+                        ...prev.azanTimes[prayer as keyof typeof prev.azanTimes],
+                        hours,
+                        minutes
+                    }
+                }
+            };
+        });
+    };
+
     const handlePrayerTimeChange = (prayer: string, timeString: string) => {
         if (!updatedMosq) return;
 
@@ -398,47 +421,72 @@ const Page = () => {
                                 </div>
 
                                 {editMode ? (
-                                    <div className="space-y-4">
-                                        {['fajr', 'zohar', 'asr', 'maghrib', 'isha'].map((prayer) => (
-                                            <div key={prayer} className="grid grid-cols-3 gap-4 items-center">
-                                                <Label className="capitalize">{prayer}</Label>
-                                                <div>
-                                                    <Input
-                                                        type="time"
-                                                        value={`${String(updatedMosq?.prayerTimes?.[prayer as keyof typeof updatedMosq.prayerTimes]?.hours || 0).padStart(2, '0')}:${String(updatedMosq?.prayerTimes?.[prayer as keyof typeof updatedMosq.prayerTimes]?.minutes || 0).padStart(2, '0')}`}
-                                                        onChange={(e) => handlePrayerTimeChange(prayer, e.target.value)}
-                                                    />
+                                    <div className="space-y-6">
+                                        <div className="space-y-4">
+                                            <h3 className="font-medium text-primary">Azan Times</h3>
+                                            {['fajr', 'zohar', 'asr', 'maghrib', 'isha'].map((prayer) => (
+                                                <div key={`azan-${prayer}`} className="grid grid-cols-3 gap-4 items-center">
+                                                    <Label className="capitalize">{prayer}</Label>
+                                                    <div>
+                                                        <Input
+                                                            type="time"
+                                                            value={`${String(updatedMosq?.azanTimes?.[prayer as keyof typeof updatedMosq.azanTimes]?.hours || 0).padStart(2, '0')}:${String(updatedMosq?.azanTimes?.[prayer as keyof typeof updatedMosq.azanTimes]?.minutes || 0).padStart(2, '0')}`}
+                                                            onChange={(e) => handleAzanTimeChange(prayer, e.target.value)}
+                                                        />
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
+                                        
+                                        <div className="space-y-4">
+                                            <h3 className="font-medium text-primary">Iqamah Times</h3>
+                                            {['fajr', 'zohar', 'asr', 'maghrib', 'isha'].map((prayer) => (
+                                                <div key={`prayer-${prayer}`} className="grid grid-cols-3 gap-4 items-center">
+                                                    <Label className="capitalize">{prayer}</Label>
+                                                    <div>
+                                                        <Input
+                                                            type="time"
+                                                            value={`${String(updatedMosq?.prayerTimes?.[prayer as keyof typeof updatedMosq.prayerTimes]?.hours || 0).padStart(2, '0')}:${String(updatedMosq?.prayerTimes?.[prayer as keyof typeof updatedMosq.prayerTimes]?.minutes || 0).padStart(2, '0')}`}
+                                                            onChange={(e) => handlePrayerTimeChange(prayer, e.target.value)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
                                 ) : (
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead>Prayer</TableHead>
-                                                <TableHead>Time</TableHead>
+                                                <TableHead>Azan</TableHead>
+                                                <TableHead>Iqamah</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             <TableRow>
                                                 <TableCell className="font-medium">Fajr</TableCell>
+                                                <TableCell>{mosq.azanTimes?.fajr ? convertToAmPm(`${mosq.azanTimes.fajr.hours}:${mosq.azanTimes.fajr.minutes}`) : '-'}</TableCell>
                                                 <TableCell>{convertToAmPm(`${mosq.prayerTimes?.fajr?.hours}:${mosq.prayerTimes?.fajr?.minutes}`)}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell className="font-medium">Zohar</TableCell>
+                                                <TableCell>{mosq.azanTimes?.zohar ? convertToAmPm(`${mosq.azanTimes.zohar.hours}:${mosq.azanTimes.zohar.minutes}`) : '-'}</TableCell>
                                                 <TableCell>{convertToAmPm(`${mosq.prayerTimes?.zohar?.hours}:${mosq.prayerTimes?.zohar?.minutes}`)}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell className="font-medium">Asr</TableCell>
+                                                <TableCell>{mosq.azanTimes?.asr ? convertToAmPm(`${mosq.azanTimes.asr.hours}:${mosq.azanTimes.asr.minutes}`) : '-'}</TableCell>
                                                 <TableCell>{convertToAmPm(`${mosq.prayerTimes?.asr?.hours}:${mosq.prayerTimes?.asr?.minutes}`)}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell className="font-medium">Maghrib</TableCell>
+                                                <TableCell>{mosq.azanTimes?.maghrib ? convertToAmPm(`${mosq.azanTimes.maghrib.hours}:${mosq.azanTimes.maghrib.minutes}`) : '-'}</TableCell>
                                                 <TableCell>{convertToAmPm(`${mosq.prayerTimes?.maghrib?.hours}:${mosq.prayerTimes?.maghrib?.minutes}`)}</TableCell>
                                             </TableRow>
                                             <TableRow>
                                                 <TableCell className="font-medium">Isha</TableCell>
+                                                <TableCell>{mosq.azanTimes?.isha ? convertToAmPm(`${mosq.azanTimes.isha.hours}:${mosq.azanTimes.isha.minutes}`) : '-'}</TableCell>
                                                 <TableCell>{convertToAmPm(`${mosq.prayerTimes?.isha?.hours}:${mosq.prayerTimes?.isha?.minutes}`)}</TableCell>
                                             </TableRow>
                                         </TableBody>
@@ -453,22 +501,30 @@ const Page = () => {
                                 </div>
 
                                 {editMode ? (
-                                    <div className="space-y-6">
-                                        <div className="space-y-4">
-                                            <h3 className="font-medium">Juma Prayer</h3>
-                                            <div className="grid grid-cols-2 gap-4 items-center">
-                                                <Label htmlFor="juma-time">Time</Label>
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-3 gap-4 items-center">
+                                            <Label>Juma Azan</Label>
+                                            <div>
                                                 <Input
-                                                    id="juma-time"
+                                                    type="time"
+                                                    value={`${String(updatedMosq?.azanTimes?.juma?.hours || 0).padStart(2, '0')}:${String(updatedMosq?.azanTimes?.juma?.minutes || 0).padStart(2, '0')}`}
+                                                    onChange={(e) => handleAzanTimeChange('juma', e.target.value)}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-3 gap-4 items-center">
+                                            <Label>Juma Iqamah</Label>
+                                            <div>
+                                                <Input
                                                     type="time"
                                                     value={`${String(updatedMosq?.prayerTimes?.juma?.hours || 0).padStart(2, '0')}:${String(updatedMosq?.prayerTimes?.juma?.minutes || 0).padStart(2, '0')}`}
                                                     onChange={(e) => handlePrayerTimeChange('juma', e.target.value)}
                                                 />
                                             </div>
                                         </div>
-
+                                        
                                         <div className="space-y-4">
-                                            <h3 className="font-medium">Eid-ul-Fitr</h3>
+                                            <h3 className="font-medium text-primary">Eid-ul-Fitr</h3>
                                             <div className="grid grid-cols-2 gap-4 items-center">
                                                 <Label htmlFor="eidulfitr-time">Time</Label>
                                                 <Input
@@ -481,7 +537,7 @@ const Page = () => {
                                         </div>
 
                                         <div className="space-y-4">
-                                            <h3 className="font-medium">Eid-ul-Azha</h3>
+                                            <h3 className="font-medium text-primary">Eid-ul-Azha</h3>
                                             <div className="grid grid-cols-2 gap-4 items-center">
                                                 <Label htmlFor="eidulazha-time">Time</Label>
                                                 <Input
@@ -498,16 +554,22 @@ const Page = () => {
                                         <TableHeader>
                                             <TableRow>
                                                 <TableHead>Prayer</TableHead>
-                                                <TableHead>Time</TableHead>
+                                                <TableHead>Azan</TableHead>
+                                                <TableHead>Iqamah</TableHead>
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
                                             {mosq.prayerTimes?.juma ? (
                                                 <TableRow>
                                                     <TableCell className="font-medium">Juma</TableCell>
+                                                    <TableCell>{mosq.azanTimes?.juma ? convertToAmPm(`${mosq.azanTimes.juma.hours}:${mosq.azanTimes.juma.minutes}`) : '-'}</TableCell>
                                                     <TableCell>{convertToAmPm(`${mosq.prayerTimes.juma.hours}:${mosq.prayerTimes.juma.minutes}`)}</TableCell>
                                                 </TableRow>
-                                            ) : null}
+                                            ) : (
+                                                <TableRow>
+                                                    <TableCell colSpan={3} className="text-center text-muted-foreground">No Juma time specified</TableCell>
+                                                </TableRow>
+                                            )}
 
                                             {mosq.prayerTimes?.eidulfitr ? (
                                                 <TableRow>
