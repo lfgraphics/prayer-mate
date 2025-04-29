@@ -38,7 +38,7 @@ const MosqueCard = ({ mosq }: { mosq: MosqType }) => {
 
     // Check if it's          Juma day     --------------------------------  if the mosq has juma prayer time  -----------------------------  -------- if it is before juma time-----------   ------------------------------------ if it is after fajr time -------------------------------    ----------------------------------- if it is around juma time -----------------------------------
     const itsJumaTime = now.getDay() === 5 && mosq.prayerTimes?.juma?.hours !== undefined && mosq.prayerTimes?.juma?.minutes !== undefined && ((currentfHour < mosq.prayerTimes.juma.hours && currentfHour > mosq.prayerTimes.fajr.hours && currentfMinute > mosq.prayerTimes.fajr.minutes) || (currentfHour === mosq.prayerTimes.juma.hours && currentfMinute < mosq.prayerTimes.juma.minutes));
-    
+
     const upcoming = itsJumaTime ? prayerTimesArray.find(prayer => prayer?.name === 'juma') : prayerTimesArray.find(prayer => prayer?.time !== undefined && prayer.time > now);
 
     const next = upcoming ?? prayerTimesArray[0]; // if all today's prayers passed, pick first of next day
@@ -58,7 +58,7 @@ const MosqueCard = ({ mosq }: { mosq: MosqType }) => {
               src={mosq.photos[0]}
               alt={mosq.name}
               className="w-full h-full object-cover"
-              onClick={() => { setIsImageOpen(true); setSelectedImage(mosq.photos[0])}}
+              onClick={() => { setIsImageOpen(true); setSelectedImage(mosq.photos[0]) }}
             />
           ) : (
             <div className="text-4xl text-muted-foreground">🕌</div>
@@ -81,13 +81,7 @@ const MosqueCard = ({ mosq }: { mosq: MosqType }) => {
 
           <Link
             target='_blank'
-            href={`https://google.com/maps?q=${'type' in mosq.coordinates
-              ? mosq.coordinates.coordinates[0]
-              : mosq.coordinates[0]
-              },${'type' in mosq.coordinates
-                ? mosq.coordinates.coordinates[1]
-                : mosq.coordinates[1]
-              }`}
+            href={`https://www.google.com/maps/dir/?api=1&destination=${'type' in mosq.coordinates ? mosq.coordinates.coordinates[1] : mosq.coordinates[1]},${'type' in mosq.coordinates ? mosq.coordinates.coordinates[0] : mosq.coordinates[0]}`}
             className="text-sm text-primary hover:text-primary/80 flex items-center gap-1 mt-1"
           >
             <Navigation size={14} />

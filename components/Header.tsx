@@ -34,6 +34,7 @@ export default function Header() {
     const pathname = usePathname();
     const { user } = useClerk();
     const isAdmin = user?.publicMetadata.role === 'admin';
+    const isImam = user?.publicMetadata.role === 'imam';
 
     const handleCloseSheet = () => {
         setSheetOpen(false);
@@ -64,10 +65,10 @@ export default function Header() {
                 <nav className="hidden md:flex items-center gap-4">
                     {renderNavLinks()}
                     <SignedIn>
-                        {isAdmin && (
+                        {(isAdmin || isImam) && (
                             <Link
-                                href="/admin"
-                                className={`px-2 py-1 text-sm font-medium transition-colors hover:text-primary ${pathname === '/admin' ? 'text-primary' : 'text-muted-foreground'}`}
+                                href={isAdmin ? "/admin" : "/imam"}
+                                className={`px-2 py-1 text-sm font-medium transition-colors hover:text-primary ${pathname === (isAdmin ? '/admin' : '/imam') ? 'text-primary' : 'text-muted-foreground'}`}
                             >
                                 Dashboard
                             </Link>
@@ -109,10 +110,11 @@ export default function Header() {
                                 <nav className="mt-4 mx-4 flex flex-col gap-2">
                                     {renderNavLinks(() => handleCloseSheet())}
                                     <SignedIn>
-                                        {isAdmin && (
+                                        {(isAdmin || isImam) && (
                                             <Link
-                                                href="/admin"
-                                                className="px-2 py-1 text-sm font-medium hover:text-primary"
+                                                onClick={() => handleCloseSheet()}
+                                                href={isAdmin ? "/admin" : "/imam"}
+                                                className={`px-2 py-1 text-sm font-medium transition-colors hover:text-primary ${pathname === (isAdmin ? '/admin' : '/imam') ? 'text-primary' : 'text-muted-foreground'}`}
                                             >
                                                 Dashboard
                                             </Link>

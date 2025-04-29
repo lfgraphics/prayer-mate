@@ -11,18 +11,12 @@ export const metadata = {
 };
 
 // Convert to a client component to avoid searchParams issues
-export default async function MosquesPage({
-    params,
-    searchParams,
-}: {
-    params: {};
-    searchParams: { [key: string]: string | string[] | undefined };
-}) {
+export default async function MosquesPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
     // Create a copy of searchParams to avoid direct access
     const searchParamsObj = Object.fromEntries(
         Object.entries(searchParams || {})
     );
-    
+
     let filterParams: any = {};
 
     // Check if coordinates search
@@ -40,7 +34,7 @@ export default async function MosquesPage({
 
     if (searchParamsObj.by === "prayerTime") {
         filterParams.by = "prayerTime";
-        
+
         if (searchParamsObj.prayerTime) {
             const prayerTime = searchParamsObj.prayerTime as string;
             const [hours, minutes] = prayerTime.split(':').map(Number);
@@ -86,6 +80,7 @@ export default async function MosquesPage({
         coordinates: mosque.coordinates.coordinates,
         imam: mosque.imam,
         prayerTimes: mosque.prayerTimes,
+        azanTimes: mosque.azanTimes,
         photos: mosque.photos || [],
         verified: mosque.verified
     }))) : [];

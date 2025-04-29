@@ -1,5 +1,3 @@
-// This is a service worker file that will handle push notifications
-
 self.addEventListener('push', function (event) {
     if (event.data) {
         const data = event.data.json();
@@ -44,3 +42,25 @@ self.addEventListener('notificationclick', function (event) {
         })
     );
 });
+
+if (typeof self !== 'undefined') {
+    self.addEventListener('install', (event) => {
+        event.waitUntil(
+            caches.open(CACHE_NAME).then((cache) => {
+                return cache.addAll([
+                    '/',
+                    'logo.png',
+                    'manifest.json',
+                ]);
+            })
+        );
+    });
+
+    self.addEventListener('fetch', (event) => {
+        event.respondWith(
+            caches.match(event.request).then((response) => {
+                return response || fetch(event.request);
+            })
+        );
+    });
+}

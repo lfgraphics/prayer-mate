@@ -49,7 +49,7 @@ const Page = () => {
             const data = await response.json();
             setMosq(data.mosq);
             setUpdatedMosq(data.mosq);
-            console.log(data.mosq);
+            console.log('mosq: ', data.mosq);
         } catch (error) {
             console.error("Error fetching mosque:", error);
             toast.error("Failed to fetch mosque information");
@@ -252,14 +252,14 @@ const Page = () => {
         const [hours, minutes] = timeString.split(':').map(Number);
 
         setUpdatedMosq(prev => {
-            if (!prev || !prev.azanTimes) return prev;
+            if (!prev) return prev;
 
             return {
                 ...prev,
                 azanTimes: {
-                    ...prev.azanTimes,
+                    ...(prev.azanTimes || {}), // Create azanTimes object if it doesn't exist
                     [prayer]: {
-                        ...prev.azanTimes[prayer as keyof typeof prev.azanTimes],
+                        ...(prev.azanTimes?.[prayer as keyof typeof prev.azanTimes] || {}),
                         hours,
                         minutes
                     }
@@ -385,7 +385,7 @@ const Page = () => {
                                         </div>
 
                                         <Link
-                                            href={`https://google.com/maps?q=${latitude},${longitude}`}
+                                            href={`https://www.google.com/maps/dir/?api=1&destination=${latitude},${longitude}`}
                                             target="_blank"
                                             className="inline-flex items-center gap-2 mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
                                         >
@@ -437,7 +437,7 @@ const Page = () => {
                                                 </div>
                                             ))}
                                         </div>
-                                        
+
                                         <div className="space-y-4">
                                             <h3 className="font-medium text-primary">Iqamah Times</h3>
                                             {['fajr', 'zohar', 'asr', 'maghrib', 'isha'].map((prayer) => (
@@ -522,7 +522,7 @@ const Page = () => {
                                                 />
                                             </div>
                                         </div>
-                                        
+
                                         <div className="space-y-4">
                                             <h3 className="font-medium text-primary">Eid-ul-Fitr</h3>
                                             <div className="grid grid-cols-2 gap-4 items-center">

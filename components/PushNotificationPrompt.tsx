@@ -26,36 +26,41 @@ export default function PushNotificationPrompt() {
 
     const checkPromptStatus = async () => {
         try {
-            // Don't show prompt if user has already decided
+            // 1. Skip if user opted out
             const dontAskAgain = user?.publicMetadata?.dontAskPushNotifications;
             if (dontAskAgain) return;
 
-            // Check if user already has a subscription
+            // 2. Ensure service worker is ready before accessing pushManager
             const registration = await navigator.serviceWorker.ready;
-            const subscription = await registration.pushManager.getSubscription();
-            if (subscription) return;
-
-            // Check when we last showed the prompt
-            const lastPromptTime = user?.publicMetadata?.lastPushPromptTime;
-            const currentTime = Date.now();
-
-            // Show prompt if never shown before or it's been more than 3 days
-            const threeDay = 3 * 24 * 60 * 60 * 1000; // 3 days in milliseconds
-            if (!lastPromptTime) {
-                // New user - show prompt and set initial lastPromptTime
-                setShowPrompt(true);
-                updatePushPromptPreference({ lastPromptTime: currentTime });
-                console.log("New user, showing prompt for the first time");
-            } else if (currentTime - Number(lastPromptTime) > threeDay) {
-                // Existing user, but it's been more than 3 days
-                setShowPrompt(true);
-                updatePushPromptPreference({ lastPromptTime: currentTime });
-                console.log("Existing user, showing prompt after 3 days");
-            } else {
-                console.log("Not showing prompt, last shown at:", new Date(Number(lastPromptTime)));
+            if (!registration) {
+                console.warn("Service Worker not ready.");
+                return;
             }
+
+            // 3. Skip if already subscribed
+            const subscription = await registration.pushManager.getSubscription();
+            if (subscription) {
+                console.log("User already subscribed to push.");
+                return;
+            }
+
+            // 4. Prompt timing logic
+            const lastPromptTime = Number(user?.publicMetadata?.lastPushPromptTime || 0);
+            const currentTime = Date.now();
+            const promptInterval = 3 * 24 * 60 * 60 * 1000; // 3 days
+
+            const shouldPrompt = !lastPromptTime || (currentTime - lastPromptTime > promptInterval);
+
+            if (shouldPrompt) {
+                setShowPrompt(true);
+                updatePushPromptPreference({ lastPromptTime: currentTime });
+                console.log(lastPromptTime ? "Showing prompt after 3 days." : "New user, showing prompt.");
+            } else {
+                console.log("Prompt skipped. Last shown at:", new Date(lastPromptTime));
+            }
+
         } catch (error) {
-            console.error('Error checking prompt status:', error);
+            console.error('❌ Error checking push prompt status:', error);
         }
     };
 

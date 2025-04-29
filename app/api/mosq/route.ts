@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser, clerkClient } from '@clerk/nextjs/server';
 import { notifyAdmins } from "@/actions/pushNotificationActions";
 
-// GET route remains unchanged as it's public
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
@@ -83,6 +82,10 @@ export async function POST(request: NextRequest) {
 
         const userRole = (sessionClaims?.metadata as { role?: string })?.role;
         const userMosqId = (sessionClaims?.metadata as { mosqId?: string })?.mosqId;
+
+        console.log("User Role:", userRole); // Debugging line
+        console.log("User Mosq ID:", userMosqId); // Debugging line
+        console.log(sessionClaims)
 
         // Only admin and imams without existing mosq can create
         if (userRole !== 'admin' && (userRole == 'imam' || userMosqId)) {
