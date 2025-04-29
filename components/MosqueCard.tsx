@@ -14,7 +14,6 @@ import { convertToAmPm, formatToDate, formatTimeToHHMM } from '@/utils/format';
 import Link from 'next/link';
 
 const MosqueCard = ({ mosq }: { mosq: MosqType }) => {
-  console.log(mosq);
   const [isImageOpen, setIsImageOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -66,7 +65,7 @@ const MosqueCard = ({ mosq }: { mosq: MosqType }) => {
         </div>
 
         <div className="flex-1">
-          <Link href={`/mosques/${mosq.id}`}>
+          <Link href={`/mosques/${mosq._id}`}>
             <h3
               className="text-xl font-bold hover:text-primary cursor-pointer"
             >

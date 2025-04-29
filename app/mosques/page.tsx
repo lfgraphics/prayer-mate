@@ -74,15 +74,16 @@ export default async function MosquesPage({ searchParams }: { searchParams: { [k
     const response = await getMosqs(filterParams);
 
     let mosques = response.success ? Object(response.mosques?.map((mosque: any) => ({
-        id: mosque._id.toString(),
+        _id: mosque._id.toString(),
         name: mosque.name,
         location: mosque.location,
         coordinates: mosque.coordinates.coordinates,
-        imam: mosque.imam,
-        prayerTimes: mosque.prayerTimes,
         azanTimes: mosque.azanTimes,
+        prayerTimes: mosque.prayerTimes,
         photos: mosque.photos || [],
-        verified: mosque.verified
+        verified: mosque.verified,
+        imamName: mosque.imam,
+        imamUserId: mosque.id
     }))) : [];
 
     return (

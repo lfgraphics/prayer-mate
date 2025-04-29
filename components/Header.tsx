@@ -54,7 +54,7 @@ export default function Header() {
     );
 
     return (
-        <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
+        <header className="sticky top-0 z-50 border-b bg-background/65 backdrop-blur">
             <div className="flex h-12 w-full items-center px-4 justify-between">
                 {/* Logo */}
                 <Link href="/" className="text-lg font-bold text-primary">

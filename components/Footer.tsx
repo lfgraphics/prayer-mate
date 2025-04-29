@@ -12,7 +12,7 @@ export default function Footer() {
     useEffect(() => {
         userInfo().then((user) => {
             setLocalUser(user.user);
-            console.log(user.user?.publicMetadata.role);
+            console.log(user.user?.publicMetadata?.role);
         });
     }, []);
 
@@ -42,8 +42,14 @@ export default function Footer() {
                         </nav>
                     </div>
 
-                    <SignedIn>
-                        {localUser && localUser?.publicMetadata.role !== 'imam' || localUser?.publicMetadata.role !== 'admin' && <Link href="/mosques/create">
+                    {(!localUser ||
+                        (localUser &&
+                            (localUser?.publicMetadata?.role !== 'admin' &&
+                                localUser?.publicMetadata?.role !== 'imam') ||
+                            !localUser?.publicMetadata ||
+                            !localUser?.publicMetadata?.role)
+                    ) &&
+                        <Link href="/mosques/create">
                             <div className="space-y-3">
                                 <h3 className="text-lg font-semibold">For Imams</h3>
                                 <div>
@@ -54,7 +60,6 @@ export default function Footer() {
                                 </div>
                             </div>
                         </Link>}
-                    </SignedIn>
                 </div>
 
                 <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
