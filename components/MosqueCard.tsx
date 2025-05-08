@@ -72,6 +72,7 @@ const MosqueCard = ({ mosq }: { mosq: MosqType }) => {
               {mosq.name}
             </h3>
           </Link>
+          Imam: {mosq.imam}
 
           <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
             <MapPin size={14} className="flex-shrink-0" />
